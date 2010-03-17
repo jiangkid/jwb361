@@ -10,7 +10,7 @@ RD_CHECK_RSP    =   0x04
 
 if __name__ == "__main__":
     t_org = time.time()
-    f = open('main.py', 'rb')
+    f = open('HZK16.dat', 'rb')
     ser = serial.Serial(port='COM1', baudrate=115200)
     f.seek(0, os.SEEK_END)
     fileSize = f.tell()

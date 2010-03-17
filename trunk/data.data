@@ -1,0 +1,58 @@
+r.readline(),import os
+import serial
+from struct import *
+WR_DF      =       0x01
+if __name__ == "__main__":
+    f = open('HZK16.dat', 'rb')
+    ser = serial.Serial(port='COM1', baudrate=9600)
+    f.seek(0, os.SEEK_END)
+    fileSize = f.tell()
+    count = 0
+    f.seek(0, os.SEEK_SET)
+    while f.tell() is not fileSize:
+        hexData = f.read(264)
+        ser.write(pack('B', WR_DF))
+        ser.write(pack('!H', len(hexData)))
+        ser.write(hexData)
+        count += 1
+        print count
+    print "ALL OK!"
+#        print ser.readline(),import os
+import serial
+from struct import *
+WR_DF      =       0x01
+if __name__ == "__main__":
+    f = open('HZK16.dat', 'rb')
+    ser = serial.Serial(port='COM1', baudrate=9600)
+    f.seek(0, os.SEEK_END)
+    fileSize = f.tell()
+    count = 0
+    f.seek(0, os.SEEK_SET)
+    while f.tell() is not fileSize:
+        hexData = f.read(264)
+        ser.write(pack('B', WR_DF))
+        ser.write(pack('!H', len(hexData)))
+        ser.write(hexData)
+        count += 1
+        print count
+    print "ALL OK!"
+#        print ser.readline(),import os
+import serial
+from struct import *
+WR_DF      =       0x01
+if __name__ == "__main__":
+    f = open('HZK16.dat', 'rb')
+    ser = serial.Serial(port='COM1', baudrate=9600)
+    f.seek(0, os.SEEK_END)
+    fileSize = f.tell()
+    count = 0
+    f.seek(0, os.SEEK_SET)
+    while f.tell() is not fileSize:
+        hexData = f.read(264)
+        ser.write(pack('B', WR_DF))
+        ser.write(pack('!H', len(hexData)))
+        ser.write(hexData)
+        count += 1
+        print count
+    print "ALL OK!"
+#        print ser.readline(),

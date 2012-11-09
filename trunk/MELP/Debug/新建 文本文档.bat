@@ -1,1 +1,0 @@
-sc1200 -i test1.wav -o out.wav

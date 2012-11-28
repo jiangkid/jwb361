@@ -9,7 +9,7 @@
 %OUTPUT:
 %	sig_out(output signal)
 %	state(final state of filter)
-function [sig_out,state_in,state_out]=melp_iir(b,a,sig_in,state_out,state_in)
+function [sig_out,state_in,state_out]=melp_iir(b,a,sig_in,state_in,state_out)
 order = size(a, 2) - 1;
 sig_len = size(sig_in, 2);
 sig_out(1:sig_len) = 0;

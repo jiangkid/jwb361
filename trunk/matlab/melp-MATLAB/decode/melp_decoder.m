@@ -1,15 +1,15 @@
 %C is the struct array which contain the coded data produced by coder.
-%function v = melp_decoder(C)
+function v = melp_decoder(C)
 %  C(N)  =  struct('ls', 'QFM', 'pitch', 'G', 'vp', 'jt');
-clear all;
+%clear all;
 %clc;
-load('c_data.mat');
+%load('c_data.mat');
 d_init;
-C = c;
+%C = c;
 TEMPSIZE = size(C);
 FRN = TEMPSIZE(2);
 %add by jiangwenbin
-unvoiced_count = 0;
+%unvoiced_count = 0;
 
 global fm2 jt2 vp2;
 for i = 1:FRN
@@ -119,4 +119,4 @@ for i = 1:FRN
     end
 end
 %wavwrite(v/32768, 8000, strcat(datestr(now,'HH_MM_SS'),'.wav'));
-soundsc(v, 8000);
+%soundsc(v, 8000);

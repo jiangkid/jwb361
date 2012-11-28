@@ -1,0 +1,130 @@
+% MATLAB SIMULATION OF FS-1015 LPC-10e
+% COPYRIGHT (C) 1996-99 ANDREAS SPANIAS and TED PAINTER
+%
+% This Copyright applies only to this particular MATLAB implementation
+% of the LPC-10e coder.  The MATLAB software is intended only for educational
+% purposes.  No other use is intended or authorized.  This is not a public
+% domain program and unauthorized distribution to individuals or networks 
+% is prohibited. Be aware that use of the standard in any form is goverened
+% by rules of the US DoD.  
+% This program is free software. It is distributed in the hope that it will
+% be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  There is no commitment 
+% or even implied commitment on behalf of Andreas Spanias or Ted Painter
+% for maintenance or support of this code.
+%
+% MATLAB is trademark of The Mathworks Inc
+%
+% ALL DERIVATIVE WORKS MUST INCLUDE THIS COPYRIGHT NOTICE.
+%
+% ******************************************************************
+% INVERT
+%
+% PORTED TO MATLAB FROM LPC-55 C RELEASE
+% 3-21-94
+%
+% ******************************************************************
+%
+% DESCRIPTION
+%
+% Invert the covariance matrix using Choleski decomposition.
+%
+% DESIGN NOTES
+%
+% Classical Cholesky decomposition is not completed because reflection
+% coefficients obtained during the first back substitution correlete
+% closely with actual reflection coefficients.
+%
+% See Also:  Version 52 release notes; Rabiner and Schafer, pp. 407-411.
+%
+% VARIABLES
+%
+% INPUTS
+%   phi      -   Covariance matrix
+%   psi      -   Covariance vector
+%   rc       -   Pseudo reflection coefficients
+%
+% OUTPUTS
+%   rc       -   Pseudo reflection coefficients
+%
+% INTERNAL
+%   save     -   Intermediate result
+%   eps      -   Termination tolerance
+%
+% CONSTANTS
+%   ORDER    -   Linear prediction order
+%   AF       -   Analysis frame buffer index
+%
+% ******************************************************************
+
+function rc = invert( phi, psi, rc )
+
+% DECLARE GLOBAL VARIABLES
+global ORDER AF;
+
+% INITIALIZE CONSTANTS
+eps = 1.0e-10;
+
+% DECOMPOSE PHI INTO V D V', WHERE V IS A TRIANGULAR MATRIX WHOSE
+% MAIN DIAGONAL ELEMENTS ARE ALL 1, V' IS THE TRANSPOSE OF V, AND
+% D IS A VECTOR.  STORE ALL RESULTS IN MODIFIED PHI MATRIX.
+j = 1;
+while j <= ORDER
+    k = 1;
+    while k < j
+        save = phi(j,k) * phi(k,k);
+        phi(j:ORDER,j) = phi(j:ORDER,j) - ( phi(j:ORDER,k) .* save );
+        k = k + 1;
+    end
+
+    % ZERO OUT HIGHER ORDER RC'S IF ALGORITHM TERMINATES EARLY
+    if abs( phi(j,j) ) < eps
+        rc(j:ORDER,AF) = zeros( ORDER-j+1, 1);
+        return
+    end
+
+    % COMPUTE INTERMEDIATE RESULTS, WHICH ARE SIMILAR TO RC'S ( == PSUEDO RCs)
+    rc(j,AF) = psi(j);
+    rc(j,AF) = rc(j,AF) - sum( rc(1:(j-1),AF) .* phi(j,1:(j-1))' );
+    phi(j,j) = 1.0 / phi(j,j);
+    rc(j,AF) = rc(j,AF) * phi(j,j);
+    rc(j,AF) = max([min([rc(j,AF),0.999]),-0.999]);
+    j = j + 1;
+end
+
+
+
+function rc = invert_bak( phi, psi, rc )
+
+% DECLARE GLOBAL VARIABLES
+global ORDER AF;
+
+% INITIALIZE CONSTANTS
+eps = 1.0e-10;
+
+% DECOMPOSE PHI INTO V D V', WHERE V IS A TRIANGULAR MATRIX WHOSE
+% MAIN DIAGONAL ELEMENTS ARE ALL 1, V' IS THE TRANSPOSE OF V, AND
+% D IS A VECTOR.  STORE ALL RESULTS IN MODIFIED PHI MATRIX.
+j = 1;
+while j <= ORDER
+    k = 1;
+    while k < j
+        save = phi(j,k) * phi(k,k);
+        phi(j:ORDER,j) = phi(j:ORDER,j) - ( phi(j:ORDER,k) .* save );
+        k = k + 1;
+    end
+
+    % ZERO OUT HIGHER ORDER RC'S IF ALGORITHM TERMINATES EARLY
+    if abs( phi(j,j) ) < eps
+        rc(j:ORDER,AF) = zeros( ORDER-j+1, 1);
+        return
+    end
+
+    % COMPUTE INTERMEDIATE RESULTS, WHICH ARE SIMILAR TO RC'S ( == PSUEDO RCs)
+    rc(j,AF) = psi(j);
+    rc(j,AF) = rc(j,AF) - sum( rc(1:(j-1),AF) .* phi(j,1:(j-1))' );
+    phi(j,j) = 1.0 / phi(j,j);
+    rc(j,AF) = rc(j,AF) * phi(j,j);
+    rc(j,AF) = max([min([rc(j,AF),0.999]),-0.999]);
+    j = j + 1;
+end

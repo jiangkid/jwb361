@@ -1,0 +1,55 @@
+README AND QUICK REFERENCE
+FS-1015 LPC-10E FOR MATLAB
+2/5/96
+
+1.0  SYSTEM REQUIREMENTS
+
+  * 386SX w/ 387 FPU minimum; 486DX4-100 or better recommended.
+  * 4 MB RAM minimum; 8+ MB recommended.
+  * 512 kb free hard disk space minimum
+  * Microsoft-compatible mouse
+  * Microsoft Windows v3.1
+  * MATLAB for Windows v4.0 or better (also runs under the Student Edition)
+  * Software will also run under MATLAB in UNIX and other workstation environments.
+
+2.0  INSTALLATION
+
+  a)  PLEASE READ THE COPYRIGHT NOTICE PRIOR TO INSTALLATION.  IT CAN BE FOUND
+      IN THE FILE CPYRIGHT.TXT.
+  b)  UUDECODE the distribution archive.  This will create the file lpc10ew.exe.
+  c)  Copy lpc10ew.exe to a directory in which you wish to keep the software.
+  d)  Type "lpc10ew".  Press Return.  This will unpack the LPC-10e archive.
+  e)  Delete the archive file lpc10ew.exe.
+  f)  Follow the instructions under 3.0 to run the software.
+
+3.0  RUNNING LPC-10E FOR MATLAB 
+
+LPC-10e for MATLAB uses Windows-standard .WAV files for speech input and 
+speech output.  Input files should be 16-bit .WAV files, sampled at 8 kHz.  Most 
+sound card software will support this file format.  Similarly, output files generated 
+by the algorithm are Windows-standard 16-bit .WAV files, with an 8 kHz sample 
+rate.  Follow these steps to run the software:
+
+  a)  Run Microsoft Windows and MATLAB for Windows.
+  b)  Change to the LPC-10e directory, e.g., "cd lpc10e".  Press Return.
+  c)  Type "lpc10e".  Press Return.
+  d)  Read and acknowledge the copyright notice.
+  d)  Answer the input and output file selection dialogs with appropriate input and 
+      output files.
+
+
+IMPORTANT NOTE:
+
+PLEASE READ THE COPYRIGHT NOTICE IN THE ALGORITHM DIRECTORY BEFORE
+INSTALLING OR USING THE SPEECH CODING SOFTWARE.
+MATLAB is a trademark of The MathWorks.
+
+
+
+
+
+
+
+
+
+

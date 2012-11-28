@@ -1,0 +1,11 @@
+LPC10E DIRECTORY CONTENTS                                            02/05/96
+=============================================================================
+
+README         -    Installation and runtime instructions
+CPYRIGHT.TXT   -    Copyright notice
+       *.M     -    LPC-10e simulation .m files.  lpc10e.m starts simulation.
+
+PLEASE READ THE COPYRIGHT NOTICE BEFORE USING THIS SOFTWARE.
+            
+
+

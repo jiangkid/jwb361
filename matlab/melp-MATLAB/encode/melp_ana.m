@@ -145,4 +145,6 @@ for FRN = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
         c(FRN).pitch = 0;
     end
 end
-save('..\decode\c_data.mat', 'c');
+voice = melp_decoder(c);
+soundsc(voice, 8000);
+%wavwrite(voice/32768, 8000, strcat(datestr(now,'HH_MM_SS'),'.wav'));

@@ -3,8 +3,9 @@ buffer=state_syn;
 lpc_coeff=fliplr(lpc_coeff);%Flip matrix left to right
 lpc_coeff=lpc_coeff';
 for i=1:T
-   buffer(i+10)=ae(i)-buffer(i:i+9)*lpc_coeff;
+    buffer(i+10)=ae(i)-buffer(i:i+9)*lpc_coeff;
 end
 f=buffer(11:T+10);
 state_syn=buffer(T+1:T+10);
 
+end

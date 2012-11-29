@@ -8,3 +8,4 @@ sg2=(10^(G/20))*sqrt(T)/norm(s);
 %s(10:T)=sg2*s(10:T);
 %sg1=sg2;
 s=sg2*s;
+end

@@ -8,17 +8,11 @@ global FMCQ_CODEBOOK;
 %暂时不进行下面的步骤
 temp=1000;
 for n=1:256
-   u=FMCQ_CODEBOOK(n,1:10)-mag;
-   rms=Wf*(u.*u)';
-   if rms<temp
-      temp=rms;
-      f=n;
-   end
+    u=FMCQ_CODEBOOK(n,1:10)-mag;
+    rms=Wf*(u.*u)';
+    if rms<temp
+        temp=rms;
+        f=n;
+    end
 end
-      
-      
-      
-   
-
-
-
+end

@@ -1,5 +1,5 @@
 function [e, T]=d_mix(fm, T, jt, vp, factor)
-%fm 残差，T 基音周期，jt抖动因子，vp 带通清浊判决 
+%fm 残差，T 基音周期，jt抖动因子，vp 带通清浊判决
 %modify by jiangwenbin
 global melp_firs;
 global noise_FIR_pre;
@@ -67,3 +67,4 @@ e = pluse_sig + noise_sig;
 %for i=1:T
 %    e(i)=sum(ep(i:30+i)*pfirs+en(i:30+i)*efirs);
 %end
+end

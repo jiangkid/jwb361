@@ -22,9 +22,10 @@ else
     end
     if gain_max>77
         gain_max=77;
-    end    
-    %G1=(G(1)-1)*(gain_max-gain_min)/6+gain_min;%???    
+    end
+    %G1=(G(1)-1)*(gain_max-gain_min)/6+gain_min;%???
     G1=(G(1)-1+0.5)*(gain_max-gain_min)/7+gain_min;%modify by jiangwenbin
     G2p_error=0;
 end
 G2pt=G2;
+end

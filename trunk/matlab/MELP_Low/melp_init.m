@@ -1,11 +1,11 @@
 %CONST
-global FMCQ_CODEBOOK; 
+global FMCQ_CODEBOOK;
 global Wf;
 global ham_win;
 global stage1 stage2;
 ham_win=hamming(200)';    			            %汉明窗系数
 coeff;
-stage;                        					%MSVQ四级本码(stage1(128),stage2(64,64,64))               
+stage;                        					%MSVQ四级本码(stage1(128),stage2(64,64,64))
 melp_wf;                      					%傅立叶幅度加权距离系数
 CODEBOOK_FMCQ1;	              					%傅立叶谱幅度码本(256)
 CODEBOOK_FMCQ2;
@@ -46,7 +46,7 @@ sig_1000(1:FRL*2)=0;
 melp_bands(1:5,1:FRL*2)=0;            		   %前一帧的五个子带信号
 global bands_in_s bands_out_s
 bands_in_s(1:5,1:6)=0;
-bands_out_s(1:5,1:6)=0; 
+bands_out_s(1:5,1:6)=0;
 global envelop_in_s envelop_out_s
 envelop_in_s(1:4,1:2)=0;
 envelop_out_s(1:4,1:2)=0;

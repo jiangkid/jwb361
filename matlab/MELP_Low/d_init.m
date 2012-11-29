@@ -8,10 +8,10 @@
 %vp:voice power
 
 %定义全局常量
-global FMCQ_CODEBOOK;     
+global FMCQ_CODEBOOK;
 global stage1;
 global stage2;
-global melp_firs;     
+global melp_firs;
 global Cup Cdown;
 coeff;
 stage;

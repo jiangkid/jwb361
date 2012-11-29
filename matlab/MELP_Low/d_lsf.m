@@ -8,3 +8,4 @@ temp(3,:)=stage2(2,(codeword(3)-1)*10+1:codeword(3)*10);
 temp(4,:)=stage2(3,(codeword(4)-1)*10+1:codeword(4)*10);
 %º∆À„LSF
 f=sum(temp);
+end

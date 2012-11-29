@@ -15,11 +15,12 @@ function [p,r]=pitch2(sig,intp)
 %-5 ~ +5 范围内
 low=intp-5;
 if low<20
-	low=20;
+    low=20;
 end
 up=intp+5;
 if up>160
-	up=160;
+    up=160;
 end
 p=intpitch(sig,up,low);
 [p,r]=FPR(sig,p);%分数基音周期估计
+end

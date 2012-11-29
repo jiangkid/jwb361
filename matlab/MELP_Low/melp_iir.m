@@ -1,5 +1,5 @@
 %IIR filter
-%INPUT: 
+%INPUT:
 %	sig_in(input signal)
 %       state(initial state of filter)
 %       iir_ord(filter order)
@@ -24,11 +24,12 @@ state_in = sig_in(end-order+1:end);
 state_out = buffer_out(end-order+1:end);
 %buffer1=state;
 %for n=1:length
- %   buffer1(n+iir_ord)=sig_in(n)-buffer1(n:n+iir_ord-1)*(fliplr(iir_den(2:iir_ord+1))');  	%All pole filt
- %   sig_out(n)=buffer1(n:n+iir_ord)*(fliplr(iir_num)');						%All zero filt
+%   buffer1(n+iir_ord)=sig_in(n)-buffer1(n:n+iir_ord-1)*(fliplr(iir_den(2:iir_ord+1))');  	%All pole filt
+%   sig_out(n)=buffer1(n:n+iir_ord)*(fliplr(iir_num)');						%All zero filt
 %end
 %state=buffer1(n+1:n+iir_ord);	%state Refresh
 %state=state-mean(state);
 %plot(buffer)
 %state's dimension is iir_ord
-       %[sig_out,state]=filter(iir_num,iir_den,sig_in,state);
+%[sig_out,state]=filter(iir_num,iir_den,sig_in,state);
+end

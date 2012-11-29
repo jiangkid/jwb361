@@ -26,3 +26,4 @@ for i=1:4
     %[envelopes(i,:),state_e(i,:)]=melp_iir(temp1(i,:),state_e(i,:),smooth_ord,...
     %smooth_num(1,:),smooth_den(1,:),180);
 end
+end

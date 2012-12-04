@@ -8,6 +8,7 @@
 %global buffer pavg
 clear all;
 melp_init;
+p2_pre_count = 0;
 SD(1:Nframe) = 0;
 for FRN = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     %Refresh buffers£¬·ÖÎö´°ÎªÁ½Ö¡
@@ -39,10 +40,19 @@ for FRN = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     %Get bandpass and envelopes
     [melp_bands(:, FRL+1:FRL*2), melp_envelopes(:, FRL+1:FRL*2)] = melp_5b(sig_in(FRL+1:FRL*2));
     %Get fractal pitch
-    [p2, vp(1)] = pitch2(melp_bands(1, :), cur_intp);%0~500Hz
+    [p2_cur, vbp1_cur] = pitch2(melp_bands(1, :), cur_intp);%0~500Hz
+    [p2_pre, vbp1_pre] = pitch2(melp_bands(1, :), pre_intp);%0~500Hz
+    if vbp1_cur >vbp1_pre
+        p2 = p2_cur;
+        vp(1) = vbp1_cur;
+    else
+        p2_pre_count = p2_pre_count+1;
+        p2 = p2_pre;
+        vp(1) = vbp1_pre;
+    end
+    pre_intp = cur_intp;
     %bandpass voicing analyse
     vp(2:5) = melp_bpva(melp_bands, melp_envelopes, p2);
-    %pre_intp = cur_intp;
     r2 = vp(1);
 
     %jitter

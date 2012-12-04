@@ -22,6 +22,8 @@ Nframe=fix(length(s)/FRL);  %compute the frame number of the input file
 sig_in(1:FRL*2)=0;          					   %前一帧信号
 %global cheb_s;
 cheb_s(1:4)=0;  					               %60Hz四阶车比雪夫高通滤波器的初始状态
+cheb_in_s(1:4)=0;
+cheb_out_s(1:4)=0;
 
 %global sig_1000
 sig_1000(1:FRL*2)=0;
@@ -31,6 +33,7 @@ butter_s(1:6)=0;
 melp_bands(1:5,1:FRL*2)=0;            		   %前一帧的五个子带信号
 state_b(1:5,1:6)=0;                          %带通滤波器的状态
 state_e(1:4,1:2)=0;                          %全波整形滤波器的初始状态
+
 state_t(1:4,1:6)=0;        				      %包络检波中间过程的状态
 %global melp_envelopes
 melp_envelopes(1:4,1:FRL*2)=0;              	%前一幀的四个包络信号

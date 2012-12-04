@@ -8,6 +8,8 @@
 %global buffer pavg
 clear all;
 melp_init;
+trueIdx = [1,2,3,4,5,6,7,10];
+interpIdx = [8,9];
 p2_pre_count = 0;
 SD(1:Nframe) = 0;
 for FRN = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
@@ -94,35 +96,36 @@ for FRN = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     [pavg, pavg_buffer] = melp_APU(p3, r3, G(2), pavg_buffer);
 
     %Get LSF 
-    LSF = poly2lsf([1, e_lpc])';%modify by jiangwenbin
+    LSF = poly2lsf([1, e_lpc])';
     %LSF = melp_lpc2lsf(e_lpc);
 
     %minimun distance expand
     LSF = lsf_clmp(LSF);
 
     %Muti-stage Vector Quatization
-    MSVQ = melp_MSVQ(e_lpc, LSF);
+    %MSVQ = melp_MSVQ(e_lpc, LSF);
     %MSVQ = melp_MSVQ_jwb(e_lpc, LSF);
 
     %Gain quantization
     QG = melp_Qgain(G2p, G);
     G2p = G(2);
-
+    interpLSF = LSF;
+    interpLSF(interpIdx) = interp1(trueIdx, LSF(trueIdx), interpIdx);%LSF系数(8 9)帧内插值
     %Fourier Spectrum Magnitude
-    lsfs = d_lsf(MSVQ);
-    lpc2 = melp_lsf2lpc(lsfs);
-    tresid2 = lpc_residual(lpc2, sig_in(76:285), 200);
+    %lsfs = d_lsf(MSVQ);
+    lpc2 = melp_lsf2lpc(interpLSF);
+    tresid2 = lpc_residual(lpc2, sig_in(76:285), 200);%modify
     resid2 = tresid2.*ham_win;
     resid2(201:512) = 0;
     magf = abs(fft(resid2));
     fm = find_harm(magf, p3);
     
     %计算谱失真,add by jiangwenbin
-    [e_lpc_h, ] = freqz(1, [1, e_lpc], 256);%计算频率响应
-    [lpc2_h, ] = freqz(1, [1, lpc2], 256);
-    e_lpc_power_db = 10*log10(abs(e_lpc_h.^2));%功率
-    lpc2_power_db = 10*log10(abs(lpc2_h.^2));
-    SD(FRN) = sqrt(mean((e_lpc_power_db-lpc2_power_db).^2));%均方根
+    %[e_lpc_h, ] = freqz(1, [1, e_lpc], 256);%计算频率响应
+    %[lpc2_h, ] = freqz(1, [1, lpc2], 256);
+    %e_lpc_power_db = 10*log10(abs(e_lpc_h.^2));%功率
+    %lpc2_power_db = 10*log10(abs(lpc2_h.^2));
+    %SD(FRN) = sqrt(mean((e_lpc_power_db-lpc2_power_db).^2));%均方根
     
     %Quantize Fourier Magnitude
     QFM = melp_FMCQ(fm);
@@ -144,7 +147,8 @@ for FRN = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     end
     
     %组帧  C(N) = struct('ls', 0, 'fm', 0, 'pitch', 0, 'G', 0, 'vp', 0, 'jt', 0);
-    c(FRN).ls = MSVQ;
+    %c(FRN).ls = MSVQ;
+    c(FRN).lsf = LSF(trueIdx);
     c(FRN).QFM = QFM;
     c(FRN).G = QG;
     c(FRN).jt = jitter;

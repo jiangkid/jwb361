@@ -5,6 +5,9 @@ function v = melp_decoder(C)
 %clc;
 %load('c_data.mat');
 d_init;
+trueIdx = [1,2,3,4,5,6,7,10];
+interpIdx = [8,9];
+lsf_cur(1:10) = 0;
 %C = c;
 TEMPSIZE = size(C);
 FRN = TEMPSIZE(2);
@@ -13,7 +16,11 @@ FRN = TEMPSIZE(2);
 
 global fm2 jt2 vp2;
 for i = 1:FRN
-    lsf_cur = d_lsf(C(i).ls);%get lsf
+    %lsf_cur = d_lsf(C(i).ls);%get lsf
+    LSF = C(i).lsf;
+    lsf_cur(trueIdx) = LSF;
+    lsf_cur(interpIdx) = interp1(trueIdx, LSF, interpIdx);
+    
     [G1,G2,G2pt,G2p_error] = d_gains(C(i).G,G2pt,G2p_error);
     Gno = noise_est(G1,Gno);% Gno: initial 20
     G1 = noise_sup(G1,Gno);

@@ -1,6 +1,6 @@
 clear all;
-load('codebook.mat');
-load('../lsf_all.mat'); %lsf_all
+load('codebook_10b.mat');
+load('../lsf_testData.mat'); %lsf_all
 speechLSF = lsf_all';
 length = size(speechLSF, 1);
 

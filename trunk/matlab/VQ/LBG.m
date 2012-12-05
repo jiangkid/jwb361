@@ -1,20 +1,13 @@
-clear all;
-load('../lsf_all.mat'); %lsf_all
-train_signal = lsf_all';
-[signal_num, codebook_dimen] = size(train_signal);
-codebook_size = 2^16; %
-codebook = CodeBookInit(train_signal, codebook_size, codebook_dimen);
-codebook_new = codebook;
-
+function codebook = LBG(codebook, train_signal)
+[codebook_size, codebook_dimen] = size(codebook);
+[signal_num, signal_dimen] = size(train_signal);
+if codebook_dimen ~= signal_dimen
+    err('codebook_dimen not equal to signal_dimen');
+end
 sigMinDistIdx = zeros(1, signal_num);
 
-circle_num=50;  %
-D=50000;%
-tic;
-tStart = tic;%start a timer
-ave_distort = zeros(1,circle_num);
-abs_distor_value = D;
-for counter=1:circle_num;  %control_counter 为最大循环次数控制变量
+ave_distort = 10000;
+for counter=1:100;  %最大100次
     
     %step 1 样本分类
     for i = 1:signal_num
@@ -45,17 +38,17 @@ for counter=1:circle_num;  %control_counter 为最大循环次数控制变量
     end
     
     %step3 求失真
+    distortion = 0;
     for signal_idx=1:signal_num
         distance = pdist2(train_signal(signal_idx,:), codebook(sigMinDistIdx(signal_idx),:));
-        ave_distort(counter) = ave_distort(counter) + distance;
+        distortion = distortion + distance;
     end
-    ave_distort(counter) = ave_distort(counter)/signal_num;
-    abs_distor_value=abs((D-ave_distort(counter))/D);%
-    if(abs_distor_value < 0.00001)
+    distortion = distortion/signal_num;
+    abs_distor=abs((ave_distort-distortion)/ave_distort);%
+    disp(abs_distor);
+    if(abs_distor < 0.00001)
         break;
     end
-    D=ave_distort(counter);
-    
+    ave_distort = distortion;
 end
-toc(tStart)
-save('codebook_16b.mat', 'codebook');
+end

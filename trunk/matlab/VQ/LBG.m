@@ -2,7 +2,7 @@ clear all;
 load('../lsf_all.mat'); %lsf_all
 train_signal = lsf_all';
 [signal_num, codebook_dimen] = size(train_signal);
-codebook_size = 2^10; %
+codebook_size = 2^16; %
 codebook = CodeBookInit(train_signal, codebook_size, codebook_dimen);
 codebook_new = codebook;
 
@@ -58,4 +58,4 @@ for counter=1:circle_num;  %control_counter 为最大循环次数控制变量
     
 end
 toc(tStart)
-save('codebook.mat', 'codebook');
+save('codebook_16b.mat', 'codebook');

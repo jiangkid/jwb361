@@ -1,6 +1,6 @@
-function [ codeBook ] = CodeBookInit( trainSignal, codeBookSize, codeBookDim)
-%CODEBOOKINIT Summary of this function goes here
-%   Detailed explanation goes here
+function [ codeBook ] = codeBookInit( trainSignal, codeBookSize, codeBookDim)
+%随机选择法，生成初始码本
+
 [m,n] = size(trainSignal);         % 判断输入量的大小
 if(n ~= codeBookDim)
     error('trainSignal colums ~= codeBookDim ');

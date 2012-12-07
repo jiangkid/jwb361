@@ -16,10 +16,10 @@ FRN = TEMPSIZE(2);
 
 global fm2 jt2 vp2;
 for i = 1:FRN
-    %lsf_cur = d_lsf(C(i).ls);%get lsf
-    LSF = C(i).lsf;
-    lsf_cur(trueIdx) = LSF;
-    lsf_cur(interpIdx) = interp1(trueIdx, LSF, interpIdx);
+    lsf_cur = d_lsf(C(i).ls);%get lsf
+    %LSF = C(i).lsf;
+    %lsf_cur(trueIdx) = LSF;
+    %lsf_cur(interpIdx) = interp1(trueIdx, LSF, interpIdx);
     
     [G1,G2,G2pt,G2p_error] = d_gains(C(i).G,G2pt,G2p_error);
     Gno = noise_est(G1,Gno);% Gno: initial 20
@@ -67,7 +67,6 @@ for i = 1:FRN
         %d_interpolate;
         %parameter interpolate
         factor = t0/180;
-        %基音周期插值
         if t0<91
             G = G2p+2*factor*(G1-G2p);   %0~90
         else
@@ -115,6 +114,13 @@ for i = 1:FRN
     end
     [temp,state_disp] = disper_filter(sig_fr,state_disp,disperse);%脉冲散布滤波
     v = [v,temp];
+    
+    if i == 14
+        signalDec = temp;
+        lpc = lpcs;
+        save('data.mat', 'signalDec','lpc','G');
+    end
+    
     G2p = G2;
     lsf_pre = lsf_cur;
     u_pre = u_cur;
@@ -123,7 +129,7 @@ for i = 1:FRN
         pitch_pre = pitch_cur;
         fm1 = fm2;
         jt1 = jt2;
-    end
+    end    
 end
 %wavwrite(v/32768, 8000, strcat(datestr(now,'HH_MM_SS'),'.wav'));
 %soundsc(v, 8000);

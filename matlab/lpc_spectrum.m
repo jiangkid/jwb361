@@ -13,13 +13,11 @@ frameNum = length(inSpeech)/frameLen;
 for frameIdx = 1:frameNum
     frameData = inSpeech(frameLen*(frameIdx-1)+1 : frameLen*frameIdx);
     figure(9);
-    f = 0:1/256:1;%¹éÒ»»¯ÆµÂÊ,0~fs/2
     %fft analysis
     framefft = fft(frameData, 512);    
-    plotData = abs(framefft(1:256).^2)/512;
-    plot(f(1:256), 10*log10(plotData));    
-    grid on;
-    
+    framefftData = abs(framefft(1:256).^2)/512;
+    framefftData = 10*log10(framefftData);
+    f = 0:1/256:1;
     %lpc analysis
     [framelpc_a, framelpc_g] = lpc(frameData, 20);
     if methodType == 1
@@ -34,13 +32,13 @@ for frameIdx = 1:frameNum
         plotData = framelpc_g./(abs(1+w).^2);
     elseif methodType == 3
         %method 3, freqz
-        [h, f] = freqz(sqrt(framelpc_g), framelpc_a, 256);
-        f = f/pi;
+        [h, ff] = freqz(sqrt(framelpc_g), framelpc_a, 256);
+        ff = ff/pi;
         plotData = abs(h).^2;
     end
-    hold on;
-    plot(f(1:256), 10*log10(plotData), 'r');
-        
-    hold off;
-    pause(1);
+    plotData = 10*log10(plotData);    
+    plot(f(1:256), framefftData, f(1:256), plotData, 'r');
+    grid on;
+    pngName = sprintf('LPC_Spctrum%d.png',frameIdx);
+    print(gcf,'-dpng', pngName);
 end

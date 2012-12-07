@@ -30,7 +30,7 @@ for FRN = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     %[sig_in(FRL+1:FRL*2), cheb_s] = filter(dcr_num, dcr_den, sig_origin, cheb_s);
     [sig_in(FRL+1:FRL*2), cheb_in_s, cheb_out_s] = melp_iir(dcr_num, dcr_den, sig_origin,cheb_in_s, cheb_out_s);
     %[sig_in(FRL+1:FRL*2), cheb_s] = melp_iir(sig_origin, cheb_s, dcr_ord, dcr_num, dcr_den, FRL);
-
+    
     %Get integer pitch, modify by jiangwenbin
     %[sig_1000(FRL+1:FRL*2), butter_s] = filter(butt_1000num, butt_1000den, sig_in(FRL+1:FRL*2), butter_s);
     [sig_1000(FRL+1:FRL*2), butter_in_s, butter_out_s] = melp_iir(butt_1000num, butt_1000den, sig_in(FRL+1:FRL*2), butter_in_s, butter_out_s);
@@ -68,7 +68,7 @@ for FRN = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     e_lpc = melp_lpc(sig_in(81:280));
     %temp_lpc = lpc(sig_in(81:280), 10);
     %e_lpc = temp_lpc(2:11);
-
+    
     %LPC Residual
     e_resid = lpc_residual(e_lpc, sig_in, 350);
 
@@ -98,22 +98,27 @@ for FRN = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     %Get LSF 
     LSF = poly2lsf([1, e_lpc])';
     %LSF = melp_lpc2lsf(e_lpc);
-
+    if FRN == 14
+        signal_org = s((FRN-2)*180+1 : (FRN-1)*180);
+        lpc_org = e_lpc;
+        G_org = G(2);
+        save('org_data.mat', 'signal_org','lpc_org','G_org');
+    end
     %minimun distance expand
     LSF = lsf_clmp(LSF);
 
     %Muti-stage Vector Quatization
-    %MSVQ = melp_MSVQ(e_lpc, LSF);
+    MSVQ = melp_MSVQ(e_lpc, LSF);
     %MSVQ = melp_MSVQ_jwb(e_lpc, LSF);
 
     %Gain quantization
     QG = melp_Qgain(G2p, G);
     G2p = G(2);
-    interpLSF = LSF;
-    interpLSF(interpIdx) = interp1(trueIdx, LSF(trueIdx), interpIdx);%LSF系数(8 9)帧内插值
+    %interpLSF = LSF;
+    %interpLSF(interpIdx) = interp1(trueIdx, LSF(trueIdx), interpIdx);%LSF系数(8 9)帧内插值
     %Fourier Spectrum Magnitude
-    %lsfs = d_lsf(MSVQ);
-    lpc2 = melp_lsf2lpc(interpLSF);
+    lsfs = d_lsf(MSVQ);
+    lpc2 = melp_lsf2lpc(lsfs);
     tresid2 = lpc_residual(lpc2, sig_in(76:285), 200);%modify
     resid2 = tresid2.*ham_win;
     resid2(201:512) = 0;
@@ -147,8 +152,8 @@ for FRN = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     end
     
     %组帧  C(N) = struct('ls', 0, 'fm', 0, 'pitch', 0, 'G', 0, 'vp', 0, 'jt', 0);
-    %c(FRN).ls = MSVQ;
-    c(FRN).lsf = LSF(trueIdx);
+    c(FRN).ls = MSVQ;
+    %c(FRN).lsf = LSF(trueIdx);
     c(FRN).QFM = QFM;
     c(FRN).G = QG;
     c(FRN).jt = jitter;

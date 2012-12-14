@@ -1,0 +1,1 @@
+nohup matlab -nojvm -nodisplay <LBG_12b.m> LBG_12b.log &

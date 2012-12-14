@@ -1,6 +1,6 @@
 clear all;
 clc;
-[inSpeech, fs, bits] = wavread('chineseNews_2012-11-20.wav');
+[inSpeech, fs, bits] = wavread('chineseNews_2012-11-19.wav');
 inSpeech = inSpeech*32767;
 %inSpeech = filter([1 -0.9375], 1, inSpeech);
 frameLen = 180;

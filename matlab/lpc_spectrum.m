@@ -36,8 +36,10 @@ for frameIdx = 1:frameNum
         ff = ff/pi;
         plotData = abs(h).^2;
     end
-    plotData = 10*log10(plotData);    
-    plot(f(1:256), framefftData, f(1:256), plotData, 'r');
+    plotData = 10*log10(plotData);
+    [pks, locs]=findpeaks(plotData);
+    locs = (locs-1)/255;
+    plot(f(1:256), framefftData, f(1:256), plotData, 'r', locs, pks, '*g');
     grid on;
     pngName = sprintf('LPC_Spctrum%d.png',frameIdx);
     print(gcf,'-dpng', pngName);

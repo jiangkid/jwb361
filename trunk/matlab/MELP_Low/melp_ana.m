@@ -99,7 +99,7 @@ for FRN = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     LSF = poly2lsf([1, e_lpc])';
     %LSF = melp_lpc2lsf(e_lpc);
     if FRN == 14
-        signal_org = s((FRN-2)*180+1 : (FRN-1)*180);
+        signal_org = s((FRN-2)*180+1 : (FRN-1)*180); %—” ±“ª÷°
         lpc_org = e_lpc;
         G_org = G(2);
         save('org_data.mat', 'signal_org','lpc_org','G_org');

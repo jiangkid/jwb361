@@ -12,8 +12,9 @@ lsf_cur(1:10) = 0;
 TEMPSIZE = size(C);
 FRN = TEMPSIZE(2);
 %add by jiangwenbin
+global count;
+count = 0;
 %unvoiced_count = 0;
-
 global fm2 jt2 vp2;
 for i = 1:FRN
     lsf_cur = d_lsf(C(i).ls);%get lsf
@@ -86,22 +87,22 @@ for i = 1:FRN
         %    vp(1:5) = 0;
         %    jt = 0.25;
         %else             %voiced
-            jt = factor*(jt2-jt1)+jt1;
-            fm = factor*(fm2-fm1)+fm1;
-            vp = factor*(vp2-vp1)+vp1;
-            T = factor*(pitch_cur-pitch_pre)+pitch_pre;
-            if ((G1-G2p)>6)&&(pitch_pre>2*pitch_cur)
-                T = pitch_cur;
-            end
+        jt = factor*(jt2-jt1)+jt1;
+        fm = factor*(fm2-fm1)+fm1;
+        vp = factor*(vp2-vp1)+vp1;
+        T = factor*(pitch_cur-pitch_pre)+pitch_pre;
+        if ((G1-G2p)>6)&&(pitch_pre>2*pitch_cur)
+            T = pitch_cur;
+        end
         %end
         
         %产生激励信号
         %if p2 == 0
-            %ep1(1:5) = 0;
+        %ep1(1:5) = 0;
         %    e = rand(1,T)-0.5;
         %    unvoiced_count = unvoiced_count+1;
         %else
-            [e,T] = d_mix(fm,T,jt,vp,factor);
+        [e,T] = d_mix(fm,T,jt,vp,factor);
         %end
         
         lpcs = melp_lsf2lpc(lsfs);
@@ -110,16 +111,21 @@ for i = 1:FRN
         [h,state_syn] = d_lps(lpcs,g,T,state_syn);%LP合成
         t0 = t0 + T;
         h = d_ga(T,h,G);%增益调整
-        sig_fr = [sig_fr,h];
+        h = lpcEnhance(h, lpcs, G);%LPC谱包络增强,jiangwenbin
+        count = count+1;
+        h = d_ga(T,h,G);%增益调整
+        
+        %pause;
+        sig_fr = [sig_fr,h'];
     end
     [temp,state_disp] = disper_filter(sig_fr,state_disp,disperse);%脉冲散布滤波
     v = [v,temp];
-    
-    if i == 14
-        signalDec = temp;
-        lpc = lpcs;
-        save('data.mat', 'signalDec','lpc','G');
-    end
+    %v = [v,temp];
+    %     if i == 14 % 2161--2340
+    %         signalDec = temp;
+    %         lpcDec = lpcs;
+    %         save('data.mat', 'signalDec','lpcDec','G');
+    %     end
     
     G2p = G2;
     lsf_pre = lsf_cur;
@@ -129,7 +135,9 @@ for i = 1:FRN
         pitch_pre = pitch_cur;
         fm1 = fm2;
         jt1 = jt2;
-    end    
+    end
+end
 end
 %wavwrite(v/32768, 8000, strcat(datestr(now,'HH_MM_SS'),'.wav'));
 %soundsc(v, 8000);
+%370帧，共1423个基音周期

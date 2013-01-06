@@ -1,6 +1,7 @@
 %MELP600 4帧8bits 基音周期码本训练
 clear all;
 load('../trainData/pitch_all.mat'); %pitch_all
+pitch_all = log10(pitch_all);%对数
 %四帧联合训练
 comb = 4;
 [len_temp, dimen_temp] = size(pitch_all);
@@ -9,10 +10,10 @@ codebook_dimen = dimen_temp*comb;
 train_signal = zeros(length, codebook_dimen);
 
 for i=1:length    
-    train_signal(i,1:2) = pitch_all(comb*i-3, :);
-    train_signal(i,3:4) = pitch_all(comb*i-2, :);
-    train_signal(i,5:6) = pitch_all(comb*i-1, :);
-    train_signal(i,7:8) = pitch_all(comb*i, :);
+    train_signal(i,1) = pitch_all(comb*i-3, :);
+    train_signal(i,2) = pitch_all(comb*i-2, :);
+    train_signal(i,3) = pitch_all(comb*i-1, :);
+    train_signal(i,4) = pitch_all(comb*i, :);
 end
 
 stage1_b = 8;

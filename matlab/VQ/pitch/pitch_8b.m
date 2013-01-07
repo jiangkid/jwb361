@@ -1,5 +1,8 @@
 %MELP600 4帧8bits 基音周期码本训练
 %四帧联合训练
+clear all;
+load('../trainData/pitch_all.mat'); %pitch_all
+%四帧联合训练
 comb = 4;
 [len_temp, dimen_temp] = size(pitch_all);
 length = fix(len_temp/comb);

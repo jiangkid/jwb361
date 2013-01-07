@@ -8,11 +8,18 @@
 %global buffer pavg
 clear all;
 melp_init;
-trueIdx = [1,2,3,4,5,6,7,10];
-interpIdx = [8,9];
 p2_pre_count = 0;
-SD(1:Nframe) = 0;
-for FRN = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
+
+melp600_init;
+interCnt = 0;
+bandPassSuper = zeros(4,5);
+gainSuper = zeros(4,2);
+pitchSuper = zeros(4,1);
+LSFSuper = zeros(4,10);
+LSF1Super = zeros(2,10);
+LSF2Super = zeros(2,10);
+
+for frameIdx = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     %Refresh buffers，分析窗为两帧
     %Get new speech(filted by 4-order chebyshev filter)
     sig_in(1:FRL) = sig_in(FRL+1:FRL*2);                  
@@ -24,18 +31,14 @@ for FRN = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     melp_envelopes(:, 1:FRL) = melp_envelopes(:, FRL+1:FRL*2);      
 
     %Get a new frame speech
-    sig_origin = s((FRN-1)*FRL+1:FRN*FRL);
+    sig_origin = s((frameIdx-1)*FRL+1:frameIdx*FRL);
 
-    %Reduce the direct current, modify by jiangwenbin
-    %[sig_in(FRL+1:FRL*2), cheb_s] = filter(dcr_num, dcr_den, sig_origin, cheb_s);
+    %Reduce the direct current
     [sig_in(FRL+1:FRL*2), cheb_in_s, cheb_out_s] = melp_iir(dcr_num, dcr_den, sig_origin,cheb_in_s, cheb_out_s);
-    %[sig_in(FRL+1:FRL*2), cheb_s] = melp_iir(sig_origin, cheb_s, dcr_ord, dcr_num, dcr_den, FRL);
     
-    %Get integer pitch, modify by jiangwenbin
-    %[sig_1000(FRL+1:FRL*2), butter_s] = filter(butt_1000num, butt_1000den, sig_in(FRL+1:FRL*2), butter_s);
+    %Get integer pitch
     [sig_1000(FRL+1:FRL*2), butter_in_s, butter_out_s] = melp_iir(butt_1000num, butt_1000den, sig_in(FRL+1:FRL*2), butter_in_s, butter_out_s);
     
-    %[sig_1000(FRL+1:FRL*2), butter_s] = melp_iir(sig_in(FRL+1:FRL*2), butter_s, butt_1000ord, butt_1000num, butt_1000den, 180);
     cur_intp = intpitch(sig_1000, 160, 40);%粗估计范围40~160，对应200~50HZ
 
     %bandpass analyze
@@ -98,24 +101,31 @@ for FRN = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     %Get LSF 
     LSF = poly2lsf([1, e_lpc])';
     %LSF = melp_lpc2lsf(e_lpc);
-    if FRN == 14
-        signal_org = s((FRN-2)*180+1 : (FRN-1)*180); %延时一帧
-        lpc_org = e_lpc;
-        G_org = G(2);
-        save('org_data.mat', 'signal_org','lpc_org','G_org');
-    end
+    
     %minimun distance expand
     LSF = lsf_clmp(LSF);
 
+    %%%%%%%%%%%%%%%%%%%
+    interCnt = interCnt+1;
+    bandPassSuper(interCnt,:) = vp;
+    gainSuper(interCnt,:) = G;
+    if p3 == 0
+        p3 = 20;
+    end
+    pitchSuper(interCnt,:) = p3;
+    LSFSuper(interCnt,:) = LSF;
+    if 4 == interCnt %四帧联合量化
+        interCnt = 0;
+        [bandPassQ,gainQ,pitchQ,LSF_Q] = melp600(bandPassSuper,gainSuper,pitchSuper,LSFSuper);
+    end
+    %%%%%%%%%%%%%%%%%%%%%%
+    
     %Muti-stage Vector Quatization
     MSVQ = melp_MSVQ(e_lpc, LSF);
-    %MSVQ = melp_MSVQ_jwb(e_lpc, LSF);
 
     %Gain quantization
     QG = melp_Qgain(G2p, G);
     G2p = G(2);
-    %interpLSF = LSF;
-    %interpLSF(interpIdx) = interp1(trueIdx, LSF(trueIdx), interpIdx);%LSF系数(8 9)帧内插值
     %Fourier Spectrum Magnitude
     lsfs = d_lsf(MSVQ);
     lpc2 = melp_lsf2lpc(lsfs);
@@ -124,13 +134,6 @@ for FRN = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     resid2(201:512) = 0;
     magf = abs(fft(resid2));
     fm = find_harm(magf, p3);
-    
-    %计算谱失真,add by jiangwenbin
-    %[e_lpc_h, ] = freqz(1, [1, e_lpc], 256);%计算频率响应
-    %[lpc2_h, ] = freqz(1, [1, lpc2], 256);
-    %e_lpc_power_db = 10*log10(abs(e_lpc_h.^2));%功率
-    %lpc2_power_db = 10*log10(abs(lpc2_h.^2));
-    %SD(FRN) = sqrt(mean((e_lpc_power_db-lpc2_power_db).^2));%均方根
     
     %Quantize Fourier Magnitude
     QFM = melp_FMCQ(fm);
@@ -152,18 +155,19 @@ for FRN = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     end
     
     %组帧  C(N) = struct('ls', 0, 'fm', 0, 'pitch', 0, 'G', 0, 'vp', 0, 'jt', 0);
-    c(FRN).ls = MSVQ;
-    %c(FRN).lsf = LSF(trueIdx);
-    c(FRN).QFM = QFM;
-    c(FRN).G = QG;
-    c(FRN).jt = jitter;
-    c(FRN).vp = vp(2:5);
+    c(frameIdx).ls = MSVQ;
+    c(frameIdx).QFM = QFM;
+    c(frameIdx).G = QG;
+    c(frameIdx).jt = jitter;
+    c(frameIdx).vp = vp(2:5);
     if vp(1)>0.6
-        c(FRN).pitch = p3;
+        c(frameIdx).pitch = p3;
     else
-        c(FRN).pitch = 0;
+        c(frameIdx).pitch = 0;
     end
 end
-voice = melp_decoder(c);
-soundsc(voice, 8000);
+
+%decode
+%voice = melp_decoder(c);
+%soundsc(voice, 8000);
 %wavwrite(voice/32768, 8000, strcat(datestr(now,'HH_MM_SS'),'.wav'));

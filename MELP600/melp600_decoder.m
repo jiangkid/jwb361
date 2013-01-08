@@ -1,35 +1,33 @@
-%C is the struct array which contain the coded data produced by coder.
-function v = melp_decoder(C)
-%  C(N)  =  struct('ls', 'QFM', 'pitch', 'G', 'vp', 'jt');
-%clear all;
-%clc;
-%load('c_data.mat');
+%frameDatais the struct array which contain the coded data produced by coder.
+function v = melp600_decoder(frameData)
+% load('frameData.mat');%frameData
 d_init;
-%C = c;
-TEMPSIZE = size(C);
-FRN = TEMPSIZE(2);
+melp600_init;
+frameNum = size(frameData, 2);
 global fm2 jt2 vp2;
-for i = 1:FRN
-    lsf_cur = d_lsf(C(i).ls);%get lsf
-    %LSF = C(i).lsf;
-    %lsf_cur(trueIdx) = LSF;
-    %lsf_cur(interpIdx) = interp1(trueIdx, LSF, interpIdx);
+for superIdx = 1:frameNum
+    bandPass = melp600_BP_d(frameData(superIdx).bandPassQ);
+    mode = modeDeterm(bandPass);
+    LSF = melp600_LSF_d(frameData(superIdx).LSF_Q, mode);
+    gain = melp600_gain_d(frameData(superIdx).gainQ, mode);
+    pitch = melp600_pitch_d(frameData(superIdx).pitchQ, mode);
     
-    [G1,G2,G2pt,G2p_error] = d_gains(C(i).G,G2pt,G2p_error);
+    lsf_cur = d_lsf(frameData(superIdx).ls);%get lsf    
+    [G1,G2,G2pt,G2p_error] = d_gains(frameData(superIdx).G,G2pt,G2p_error);
     Gno = noise_est(G1,Gno);% Gno: initial 20
     G1 = noise_sup(G1,Gno);
     Gno = noise_est(G2,Gno);
     G2 = noise_sup(G2,Gno);
     
-    if C(i).pitch ~= 0; %voiced
-        fm2 = FMCQ_CODEBOOK(C(i).QFM,:);
-        if 1 == C(i).jt;
+    if frameData(superIdx).pitch ~= 0; %voiced
+        fm2 = FMCQ_CODEBOOK(frameData(superIdx).QFM,:);
+        if 1 == frameData(superIdx).jt;
             jt2 = 0.25;
         else
             jt2 = 0;
         end
-        vp2 = [1,C(i).vp];
-        pitch_cur = C(i).pitch;
+        vp2 = [1,frameData(superIdx).vp];
+        pitch_cur = frameData(superIdx).pitch;
     else %unvoiced
         pitch_cur = 50;
         jt2 = 0;

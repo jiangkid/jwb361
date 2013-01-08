@@ -12,6 +12,7 @@ p2_pre_count = 0;
 
 melp600_init;
 interCnt = 0;
+superCnt = 0;
 bandPassSuper = zeros(4,5);
 gainSuper = zeros(4,2);
 pitchSuper = zeros(4,1);
@@ -19,6 +20,8 @@ LSFSuper = zeros(4,10);
 LSF1Super = zeros(2,10);
 LSF2Super = zeros(2,10);
 
+c = struct([]);
+frameData = struct([]);
 for frameIdx = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     %Refresh buffers，分析窗为两帧
     %Get new speech(filted by 4-order chebyshev filter)
@@ -116,7 +119,12 @@ for frameIdx = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     LSFSuper(interCnt,:) = LSF;
     if 4 == interCnt %四帧联合量化
         interCnt = 0;
+        superCnt = superCnt+1;
         [bandPassQ,gainQ,pitchQ,LSF_Q] = melp600(bandPassSuper,gainSuper,pitchSuper,LSFSuper);
+        frameData(superCnt).bandPassQ = bandPassQ;
+        frameData(superCnt).gainQ = gainQ;
+        frameData(superCnt).pitchQ = pitchQ;
+        frameData(superCnt).LSF_Q = LSF_Q;
     end
     %%%%%%%%%%%%%%%%%%%%%%
     
@@ -168,6 +176,7 @@ for frameIdx = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
 end
 
 %decode
-%voice = melp_decoder(c);
-%soundsc(voice, 8000);
+% voice = melp_decoder(c);
+voice = melp600_decoder(frameData);
+soundsc(voice, 8000);
 %wavwrite(voice/32768, 8000, strcat(datestr(now,'HH_MM_SS'),'.wav'));

@@ -2,19 +2,50 @@ function [ mode ] = modeDeterm( bandPass )
 %modeDeterm, 编解码模式判别
 %   Detailed explanation goes here
 global MODE1 MODE2 MODE3 MODE4 MODE5 MODE6 MODE_DATA;
-temp1 = size(bandPass, 1);
-if temp1 ~= 4
-    err('bandPass size ~= 4');
+superSize = size(bandPass, 1);
+if superSize ~= 4
+    error('bandPass size ~= 4');
 end
-UV = zeros(1, 4);
-for idx = 1:4
-    VBP1 = bandPass(idx, 1);
-    if VBP1 > 0.6
-        UV(idx) = 1;
+% weight = [1.0 1.0 0.7 0.4 0.1];
+BandPassCons = [0 0 0 0 0; 1 0 0 0 0; 1 1 1 0 0; 1 1 1 1 1];
+%preprocess
+for i=1:superSize
+    if bandPass(i,1) < 0.6
+        bandPass(i,:) = 0;
     else
-        UV(idx) = 0;
+        bandPass(i,1) = 1;
+        for j = 2:5
+            if bandPass(i, j) > 0.6
+                bandPass(i, j) = 1;
+            else
+                bandPass(i, j) = 0;
+            end
+        end
+        if bandPass(i, 2:5) == 0001
+            bandPass(i, 2:5) = 0;
+        end
     end
 end
+tempData = zeros(superSize, 5);
+for i=1:superSize
+    distance = zeros(4,1);
+    for j=1:4
+        distance(j) = sqrt(sum(((bandPass(i,:)-BandPassCons(j,:))).^2));
+    end
+    [value, idx] = min(distance);
+    tempData(i,:) = BandPassCons(idx,:);
+end
+
+UV = tempData(:,1);
+UV = UV';
+% for idx = 1:4
+%     VBP1 = bandPass(idx, 1);
+%     if VBP1 > 0.6
+%         UV(idx) = 1;
+%     else
+%         UV(idx) = 0;
+%     end
+% end
 
 for mode_idx = 1:16
     if isequal(UV,MODE_DATA(mode_idx,:))

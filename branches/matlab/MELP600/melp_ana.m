@@ -17,6 +17,7 @@ bandPassSuper = zeros(4,5);
 gainSuper = zeros(4,2);
 pitchSuper = zeros(4,1);
 LSFSuper = zeros(4,10);
+lpcSuper = zeros(4,10);
 LSF1Super = zeros(2,10);
 LSF2Super = zeros(2,10);
 
@@ -135,10 +136,11 @@ for frameIdx = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     end
     pitchSuper(interCnt,:) = p3;
     LSFSuper(interCnt,:) = LSF;
+    lpcSuper(interCnt,:) = e_lpc;
     if 4 == interCnt %四帧联合量化
         interCnt = 0;
         superCnt = superCnt+1;
-        [bandPassQ,gainQ,pitchQ,LSF_Q] = melp600(bandPassSuper,gainSuper,pitchSuper,LSFSuper);
+        [bandPassQ,gainQ,pitchQ,LSF_Q] = melp600(bandPassSuper,gainSuper,pitchSuper,LSFSuper, lpcSuper);
         frameData(superCnt).bandPassQ = bandPassQ;
         frameData(superCnt).gainQ = gainQ;
         frameData(superCnt).pitchQ = pitchQ;

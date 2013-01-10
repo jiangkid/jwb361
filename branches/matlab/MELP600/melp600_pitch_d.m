@@ -8,10 +8,10 @@ switch mode
         pitch = [0; 0; 0; 0];
     case MODE2
         pitch = MSVQ_d(pitchCB_6b,pitchQ);
-        pitch = pitch';
+        pitch = 10.^pitch';
     case {MODE3, MODE4, MODE5, MODE6}
         pitch = MSVQ_d(pitchCB_8b,pitchQ);
-        pitch = pitch';
+        pitch = 10.^pitch';
 end
-pitch = 10.^pitch;
+% pitch = 10.^pitch;
 end

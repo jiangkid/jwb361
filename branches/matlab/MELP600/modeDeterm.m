@@ -7,45 +7,10 @@ if superSize ~= 4
     error('bandPass size ~= 4');
 end
 % weight = [1.0 1.0 0.7 0.4 0.1];
-BandPassCons = [0 0 0 0 0; 1 0 0 0 0; 1 1 1 0 0; 1 1 1 1 1];
-%preprocess
-for i=1:superSize
-    if bandPass(i,1) < 0.6
-        bandPass(i,:) = 0;
-    else
-        bandPass(i,1) = 1;
-        for j = 2:5
-            if bandPass(i, j) > 0.6
-                bandPass(i, j) = 1;
-            else
-                bandPass(i, j) = 0;
-            end
-        end
-        if bandPass(i, 2:5) == 0001
-            bandPass(i, 2:5) = 0;
-        end
-    end
-end
-tempData = zeros(superSize, 5);
-for i=1:superSize
-    distance = zeros(4,1);
-    for j=1:4
-        distance(j) = sqrt(sum(((bandPass(i,:)-BandPassCons(j,:))).^2));
-    end
-    [value, idx] = min(distance);
-    tempData(i,:) = BandPassCons(idx,:);
-end
+bandPass = BandPassConstrain(bandPass);
 
-UV = tempData(:,1);
+UV = bandPass(:,1);
 UV = UV';
-% for idx = 1:4
-%     VBP1 = bandPass(idx, 1);
-%     if VBP1 > 0.6
-%         UV(idx) = 1;
-%     else
-%         UV(idx) = 0;
-%     end
-% end
 
 for mode_idx = 1:16
     if isequal(UV,MODE_DATA(mode_idx,:))

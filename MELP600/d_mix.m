@@ -15,19 +15,21 @@ if T>160
 elseif T<20
     T=20;
 end
-
-%计算激励信号并循环移位
-m(1:10)=fm;
-m(T-10:T-1)=fliplr(fm);
-if T>21
-    m(11:T-11)=1;
+if 0
+    %计算激励信号并循环移位
+    m(1:10)=fm;
+    m(T-10:T-1)=fliplr(fm);
+    if T>21
+        m(11:T-11)=1;
+    end
+    m=[0,m];
+    pluse=real(ifft(m));
+    pluse=[pluse(T-9:T),pluse(1:T-10)];%循环移位
+else
+    %无残差
+    pluse = voicePulse(T);
+    pluse = pluse./sum(pluse);
 end
-m=[0,m];
-pluse=real(ifft(m));
-pluse=[pluse(T-9:T),pluse(1:T-10)];%循环移位
-%无残差
-%pluse = voicePulse(T);
-%pluse = pluse./sum(pluse);
 %Scale
 pluse=pluse*sqrt(T)*1000;%是否要乘lpc_gain?
 noise=(rand(1,T)-0.5)*3464;%是否要乘lpc_gain?

@@ -13,6 +13,10 @@ bandPassQ = BandPassVQ(bandPass);
 %量化后的子带强度进行判决
 mode = modeDeterm(melp600_BP_d(bandPassQ));
 gainQ = gainVQ(gain, mode);
+% gain_d = melp600_gain_d(gainQ, mode);
+% gain_err = sum(sum(abs(gain-gain_d)))
 pitchQ = pitchVQ(pitch, mode);
+% pitch_d = melp600_pitch_d(pitchQ, mode);
+% pitch_err = sum(sum(abs(pitch_d-pitch)))
 LSF_Q = LSF_VQ(LSF, mode);
 end

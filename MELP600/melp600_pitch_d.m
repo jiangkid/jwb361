@@ -5,7 +5,7 @@ global  pitchCB_6b pitchCB_8b;
 
 switch mode
     case MODE1
-        pitch = 0;
+        pitch = [0; 0; 0; 0];
     case MODE2
         pitch = MSVQ_d(pitchCB_6b,pitchQ);
         pitch = pitch';
@@ -13,5 +13,5 @@ switch mode
         pitch = MSVQ_d(pitchCB_8b,pitchQ);
         pitch = pitch';
 end
-
+pitch = 10.^pitch;
 end

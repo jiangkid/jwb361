@@ -25,6 +25,9 @@ end
 m=[0,m];
 pluse=real(ifft(m));
 pluse=[pluse(T-9:T),pluse(1:T-10)];%循环移位
+%无残差
+%pluse = voicePulse(T);
+%pluse = pluse./sum(pluse);
 %Scale
 pluse=pluse*sqrt(T)*1000;%是否要乘lpc_gain?
 noise=(rand(1,T)-0.5)*3464;%是否要乘lpc_gain?

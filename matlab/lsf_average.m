@@ -18,6 +18,16 @@ for frameIdx = 1:frameNum
     lsf_all = [lsf_all, lsf];
 end;
 lsf_mean = mean(lsf_all');
+%统计分布图
+bin = 500;
+n = zeros(10,bin);
+xout = zeros(10,bin);
+for i=1:10
+	[n(i,:),xout(i,:)] = hist(lsf_all(i,:),bin);
+	plot(xout(i,:),n(i,:));
+	hold on;
+end
+
 %lsf_average = lsf_sum./frameCount;
 %plot(lsf_average,'-*');
 %对75398帧的统计平均结果

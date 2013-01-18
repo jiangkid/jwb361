@@ -1,6 +1,6 @@
 clear all;
 load('codebook_10b_split_refine.mat');
-load('../lsf_all.mat'); %lsf_all
+load('./trainData/lsf_all.mat'); %lsf_all
 speechLSF = lsf_all';
 length = size(speechLSF, 1);
 

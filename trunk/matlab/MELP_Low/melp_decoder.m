@@ -111,12 +111,11 @@ for i = 1:FRN
         [h,state_syn] = d_lps(lpcs,g,T,state_syn);%LP合成
         t0 = t0 + T;
         h = d_ga(T,h,G);%增益调整
-        h = lpcEnhance(h, lpcs, G);%LPC谱包络增强,jiangwenbin
-        count = count+1;
-        h = d_ga(T,h,G);%增益调整
-        
+%         h = lpcEnhance(h, lpcs, G);%LPC谱包络增强,jiangwenbin
+%         count = count+1;
+%         h = d_ga(T,h,G);%增益调整
         %pause;
-        sig_fr = [sig_fr,h'];
+        sig_fr = [sig_fr,h];
     end
     [temp,state_disp] = disper_filter(sig_fr,state_disp,disperse);%脉冲散布滤波
     v = [v,temp];

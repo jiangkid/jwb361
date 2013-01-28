@@ -5,8 +5,8 @@
 %Output:
 %        g(Index)
 function g=melp_MSVQ(lpcs,f)
-global stage1;
-global stage2;
+global stage1 stage2;
+global LSF_CB1 LSF_CB2 LSF_CB3 LSF_CB4;
 w = zeros(1,10);
 for j=1:10 %Get the Weighs
     w(j)=1+exp(-1i*f(j)*(1:10))*lpcs'; 
@@ -18,53 +18,91 @@ w=w.^(-0.3);
 w(9)=w(9)*0.64;
 w(10)=w(10)*0.16;
 
-JUDGE = 100000000;
+% d = m_best(f, LSF_CB1, w, 8);
+% d = m_best(d, LSF_CB2, w, 8);
+% d = m_best(d, LSF_CB3, w, 8);
+% d = m_best(d, LSF_CB4, w, 8);
+% g=d(1,12:15);
+
+JUDGE = 1000000000;
+M = 8;
 %d(m,1) is the judgement.
 %d(m,2:11) is the minus of the vector and the codeword
 %d(m,12:15) is the codeword.
-d(1:8,1:12)=JUDGE;
+d(1:M,1:12)=JUDGE;
 for s=1:128
-    delta=f-stage1((s-1)*10+1:s*10);
+    delta=f-LSF_CB1(s,:);
     temp=w*(delta.^2)';
-    if temp > JUDGE
-         error('temp error: %d', temp);
-    end
-    m=1;
-    while m<9
-        if temp<d(m,1)
-            d(m+1:9,:)=d(m:8,:);%数据下移
-            d(m,1)=temp;
-            d(m,2:11)=delta;
-            d(m,12)=s;
+    for n=1:M
+        if temp<d(n,1)
+            d(n+1:M+1,:)=d(n:M,:);%数据下移
+            d(n,1)=temp;
+            d(n,2:11)=delta;
+            d(n,12)=s;
             break;
         end
-        m=m+1;
     end
 end
-%第一级量化完成后，矩阵根据第一列数据从小到大排列
 
-for s=1:3
-    e=d;
-    d(1:8,1:12)=JUDGE;    
-    for j=1:8
-        for k=1:64
-            delta=e(j,2:11)-stage2(s,(k-1)*10+1:k*10);
-            temp=w*(delta.^2)';            
-            if temp > JUDGE
-                error('temp error: %d', temp);
-            end
-            for n=1:8
-                if temp<d(n,1)
-                    d(n+1:9,:)=d(n:8,:);
-                    d(n,1)=temp;
-                    d(n,2:11)=delta;
-                    d(n,12:11+s)=e(j,12:11+s);
-                    d(n,12+s)=k;
-                    break;
-                end
+%stage2
+e=d;
+d(1:M,1:13)=JUDGE;
+for j=1:8
+    for k=1:64
+        delta=e(j,2:11)-LSF_CB2(k,:);
+        temp=w*(delta.^2)';
+        for n=1:M
+            if temp<d(n,1)
+                d(n+1:M+1,:)=d(n:M,:);
+                d(n,1)=temp;
+                d(n,2:11)=delta;
+                d(n,12)=e(j,12);
+                d(n,13)=k;
+                break;
             end
         end
     end
 end
+
+%stage3
+e=d;
+d(1:M,1:14)=JUDGE;
+for j=1:8
+    for k=1:64
+        delta=e(j,2:11)-LSF_CB3(k,:);
+        temp=w*(delta.^2)';
+        for n=1:M
+            if temp<d(n,1)
+                d(n+1:M+1,:)=d(n:M,:);
+                d(n,1)=temp;
+                d(n,2:11)=delta;
+                d(n,12:13)=e(j,12:13);
+                d(n,14)=k;
+                break;
+            end
+        end
+    end
+end
+
+%stage4
+e=d;
+d(1:M,1:15)=JUDGE;
+for j=1:8
+    for k=1:64
+        delta=e(j,2:11)-LSF_CB4(k,:);
+        temp=w*(delta.^2)';
+        for n=1:M
+            if temp<d(n,1)
+                d(n+1:M+1,:)=d(n:M,:);
+                d(n,1)=temp;
+                d(n,2:11)=delta;
+                d(n,12:14)=e(j,12:14);
+                d(n,15)=k;
+                break;
+            end
+        end
+    end
+end
+
 g=d(1,12:15);
 end

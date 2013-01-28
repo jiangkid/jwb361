@@ -9,7 +9,7 @@
 clear all;
 melp_init;
 p2_pre_count = 0;
-
+LSF_MSVQ_all = zeros(Nframe, 4);
 melp600_init;
 interCnt = 0;
 superCnt = 0;
@@ -102,16 +102,15 @@ for frameIdx = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     %Refresh average pitch
     [pavg, pavg_buffer] = melp_APU(p3, r3, G(2), pavg_buffer);
     
-    %Get LSF
-    LSF = poly2lsf([1, e_lpc])';
-    %LSF = melp_lpc2lsf(e_lpc);
+    %Get LSF    
+    %LSF = poly2lsf([1, e_lpc])';
+    LSF = melp_lpc2lsf(e_lpc);
     
     %minimun distance expand
     LSF = lsf_clmp(LSF);
     
     %Muti-stage Vector Quatization
     MSVQ = melp_MSVQ(e_lpc, LSF);
-    
     %Gain quantization
     QG = melp_Qgain(G2p, G);
     G2p = G(2);
@@ -181,5 +180,5 @@ end
 %decode
 % voice = melp_decoder(c);
 voice = melp600_decoder(frameData);
-soundsc(voice, 8000);
-%wavwrite(voice/32768, 8000, strcat(datestr(now,'HH_MM_SS'),'.wav'));
+% soundsc(voice, 8000);
+wavwrite(voice/32768, 8000, strcat(datestr(now,'HH_MM_SS'),'.wav'));

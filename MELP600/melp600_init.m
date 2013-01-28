@@ -22,3 +22,12 @@ global LSF_CB_754_7 LSF_CB_754_5 LSF_CB_754_4;
 load('./codebook/LSF_CB_754b.mat');%LSF_CB_754_7, LSF_CB_754_5, LSF_CB_754_4
 global LSF_CB_765_7 LSF_CB_765_6 LSF_CB_765_5;
 load('./codebook/LSF_CB_765b.mat');%LSF_CB_765_7, LSF_CB_765_6, LSF_CB_765_5
+
+global prePitch pitch_m prePitchQ preUV;
+pitch_m = [50,50];%ÖÐÖµÆ½»¬»º´æ
+prePitch = log10(50);
+prePitchQ = log10(50);
+preUV = 0;
+
+global modeCount;
+modeCount = [0 0 0 0 0 0];

@@ -21,4 +21,9 @@ a=lpc(v,10);
 
 f=a.*0.994.^(1:11);                 %Bandwidth expansion coefficient
 f=f(2:11);
+for i=1:10
+    if isnan(f(i))
+        error('NaN');
+    end
+end
 end

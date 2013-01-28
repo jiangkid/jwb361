@@ -3,6 +3,7 @@ global FMCQ_CODEBOOK;
 global Wf;
 global ham_win;
 global stage1 stage2;
+global LSF_CB1 LSF_CB2 LSF_CB3 LSF_CB4;
 ham_win=hamming(200)';    			            %汉明窗系数
 coeff;
 stage;                        					%MSVQ四级本码(stage1(128),stage2(64,64,64))

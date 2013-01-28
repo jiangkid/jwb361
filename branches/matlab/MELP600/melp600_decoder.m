@@ -11,8 +11,8 @@ for superIdx = 1:frameNum
     mode = modeDeterm(bandPass);
     LSF = melp600_LSF_d(frameData(superIdx).LSF_Q, mode);
     gain = melp600_gain_d(frameData(superIdx).gainQ, mode);
-    pitch = melp600_pitch_d(frameData(superIdx).pitchQ, mode);
     bandPass = BandPassConstrain(bandPass);
+    pitch = melp600_pitch_d(frameData(superIdx).pitchQ, mode,bandPass);
     % inter-frame
     for interIdx = 1:4
         lsf_cur = LSF(interIdx,:);
@@ -104,6 +104,8 @@ for superIdx = 1:frameNum
             sig_fr = [sig_fr,h];
         end
         [temp,state_disp] = disper_filter(sig_fr,state_disp,disperse);%Âö³åÉ¢²¼ÂË²¨
+        [temp, dcr_in_s, dcr_out_s] = melp_iir(butt_60num,butt_60den, temp,dcr_in_s, dcr_out_s);%60Hz lowpass
+
         v = [v,temp];
         G2p = G2;
         lsf_pre = lsf_cur;

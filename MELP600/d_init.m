@@ -59,3 +59,7 @@ noise_FIR_pre = melp_firs;
 pluse_FIR_pre = melp_firs;
 state_pluse(1:30)=0;
 state_noise(1:30)=0;
+
+[butt_60num,butt_60den]=butter(6,60/4000,'high');
+dcr_in_s(1:6)=0;
+dcr_out_s(1:6)=0;

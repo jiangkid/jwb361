@@ -1,8 +1,7 @@
 %MELP300码本训练
 clear all;
-load('../trainData/lsf_all.mat'); %lsf_all
-lsf_temp = lsf_all';
-lsf_temp = 4000*lsf_temp/pi;%
+load('./lsf_res.mat'); %lsf_res
+lsf_temp = 4000*lsf_res/pi;%
 %四帧联合训练
 comb = 4;
 [len_temp, dimen_temp] = size(lsf_temp);

@@ -1,5 +1,5 @@
-function [gain] = melp600_gain_d(gainQ, mode)
-%melp600 增益
+function [gain] = melp300_gain_d(gainQ, mode)
+%melp300 增益
 global MODE1 MODE2 MODE3 MODE4 MODE5 MODE6;
 global gainCB_9b;%9bit
 global gainCB_65_6 gainCB_65_5;%11bit

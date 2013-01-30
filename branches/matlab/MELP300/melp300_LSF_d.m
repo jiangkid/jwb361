@@ -1,5 +1,5 @@
-function [ LSF ] = melp600_LSF_d( LSF_Q, mode )
-%melp600_LSF_d Summary of this function goes here
+function [ LSF ] = melp300_LSF_d( LSF_Q, mode )
+%melp300_LSF_d Summary of this function goes here
 %   Detailed explanation goes here
 global MODE1 MODE2 MODE3 MODE4 MODE5 MODE6;
 global LSF_CB_753_7 LSF_CB_753_5 LSF_CB_753_3;%15bit

@@ -10,7 +10,7 @@ clear all;
 melp_init;
 p2_pre_count = 0;
 LSF_MSVQ_all = zeros(Nframe, 4);
-melp600_init;
+melp300_init;
 interCnt = 0;
 superCnt = 0;
 bandPassSuper = zeros(4,5);
@@ -139,7 +139,7 @@ for frameIdx = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     if 4 == interCnt %四帧联合量化
         interCnt = 0;
         superCnt = superCnt+1;
-        [bandPassQ,gainQ,pitchQ,LSF_Q] = melp600(bandPassSuper,gainSuper,pitchSuper,LSFSuper, lpcSuper);
+        [bandPassQ,gainQ,pitchQ,LSF_Q] = melp300(bandPassSuper,gainSuper,pitchSuper,LSFSuper, lpcSuper);
         frameData(superCnt).bandPassQ = bandPassQ;
         frameData(superCnt).gainQ = gainQ;
         frameData(superCnt).pitchQ = pitchQ;
@@ -179,6 +179,6 @@ end
 
 %decode
 % voice = melp_decoder(c);
-voice = melp600_decoder(frameData);
+voice = melp300_decoder(frameData);
 % soundsc(voice, 8000);
 wavwrite(voice/32768, 8000, strcat(datestr(now,'HH_MM_SS'),'.wav'));

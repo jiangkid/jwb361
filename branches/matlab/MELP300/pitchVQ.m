@@ -19,7 +19,7 @@ end
 
 %pre-process
 pitch = pitch';
-bandPass = BandPassConstrain( melp600_BP_d(bandPassQ));
+bandPass = BandPassConstrain( melp300_BP_d(bandPassQ));
 w = ones(1,4);
 for cb_idx = 1:4
     if bandPass(cb_idx,1) == 0

@@ -1,5 +1,5 @@
-function [ bandPass ] = melp600_BP_d( bandPassQ )
-%melp600_BP_d Summary of this function goes here
+function [ bandPass ] = melp300_BP_d( bandPassQ )
+%melp300_BP_d Summary of this function goes here
 %   Detailed explanation goes here
 global BandPassCB_5b;
 % weight = [1.0 1.0 0.7 0.4 0.1];

@@ -1,18 +1,18 @@
 %frameDatais the struct array which contain the coded data produced by coder.
-function v = melp600_decoder(frameData)
+function v = melp300_decoder(frameData)
 % load('frameData.mat');%frameData
 d_init;
-melp600_init;
+melp300_init;
 frameNum = size(frameData, 2);
 global fm2 jt2 vp2;
 for superIdx = 1:frameNum
     % super-frame
-    bandPass = melp600_BP_d(frameData(superIdx).bandPassQ);
+    bandPass = melp300_BP_d(frameData(superIdx).bandPassQ);
     mode = modeDeterm(bandPass);
-    LSF = melp600_LSF_d(frameData(superIdx).LSF_Q, mode);
-    gain = melp600_gain_d(frameData(superIdx).gainQ, mode);
+    LSF = melp300_LSF_d(frameData(superIdx).LSF_Q, mode);
+    gain = melp300_gain_d(frameData(superIdx).gainQ, mode);
     bandPass = BandPassConstrain(bandPass);
-    pitch = melp600_pitch_d(frameData(superIdx).pitchQ, mode,bandPass);
+    pitch = melp300_pitch_d(frameData(superIdx).pitchQ, mode,bandPass);
     % inter-frame
     for interIdx = 1:4
         lsf_cur = LSF(interIdx,:);

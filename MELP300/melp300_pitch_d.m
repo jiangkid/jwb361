@@ -1,4 +1,4 @@
-function pitch = melp600_pitch_d(pitchQ,mode,bandPass)
+function pitch = melp300_pitch_d(pitchQ,mode,bandPass)
 %
 global MODE1 MODE2 MODE3 MODE4 MODE5 MODE6;
 global  pitchCB_6b pitchCB_8b;

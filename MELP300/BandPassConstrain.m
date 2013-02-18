@@ -1,8 +1,8 @@
 function bandPass = BandPassConstrain(dataIn)
 %BandPassConstrain 
 superSize = size(dataIn, 1);
-if superSize ~= 4
-    error('bandPass size ~= 4');
+if superSize ~= 8
+    error('bandPass size ~= 8');
 end
 constrains = [0 0 0 0 0; 1 0 0 0 0; 1 1 1 0 0; 1 1 1 1 1];
 for i=1:superSize

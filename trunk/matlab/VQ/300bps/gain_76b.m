@@ -1,4 +1,4 @@
-%MELP300 8帧6-5两级 增益码本训练
+%MELP300 8帧7-6两级 增益码本训练
 clear all;
 load('./gain_res.mat'); %gain_res
 %8帧联合训练
@@ -19,33 +19,33 @@ for i=1:length
     train_signal(i,15:16) = gain_res(comb*i, :);
 end
 
-stage1_b = 6;
-stage2_b = 5;
+stage1_b = 7;
+stage2_b = 6;
 VQ1 = zeros(length, 1);
 residStage1 = zeros(length, codebook_dimen);
 VQ2 = zeros(length, 1);
 residStage2 = zeros(length, codebook_dimen);
 
 %stage1, train with origin signal
-gainCB_6b = codeBookTrain(train_signal, stage1_b);
+gainCB_76_7 = codeBookTrain(train_signal, stage1_b);
 %Vector Quantization
 for i = 1:length
-    distance = pdist2(train_signal(i,:), gainCB_6b);
+    distance = pdist2(train_signal(i,:), gainCB_76_7);
     [value, idx] = min(distance);
     VQ1(i) = idx;
-    residStage1(i,:) = train_signal(i,:) - gainCB_6b(idx,:);    
+    residStage1(i,:) = train_signal(i,:) - gainCB_76_7(idx,:);    
 end
-disp('gain_6_5b stage1 completed');
+disp('gain_76b stage1 completed');
 
 %stage2, train with residual of stage1
-gainCB_5b = codeBookTrain(residStage1, stage2_b);
-save('gainCB_6_5b.mat', 'gainCB_6b', 'gainCB_5b');
+gainCB_76_6 = codeBookTrain(residStage1, stage2_b);
+save('gainCB_76b.mat', 'gainCB_76_7', 'gainCB_76_6');
 %Vector Quantization
 for i = 1:length
-    distance = pdist2(residStage1(i,:), gainCB_5b);
+    distance = pdist2(residStage1(i,:), gainCB_76_6);
     [value, idx] = min(distance);
     VQ2(i) = idx;
-    residStage2(i,:) = residStage1(i,:) - gainCB_5b(idx,:);  
+    residStage2(i,:) = residStage1(i,:) - gainCB_76_6(idx,:);  
 end
-disp('gain_6_5b completed');
-save('gain_6_5b.mat');
+disp('gain_76b completed');
+save('gain_76b.mat');

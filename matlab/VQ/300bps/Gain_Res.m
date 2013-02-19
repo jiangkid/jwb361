@@ -6,6 +6,7 @@ a = zeros(1,2);%帧间预测系数
 % 0.9944    0.9944
 N = size(Gain,1);%总帧数量
 
+Gain(1,:) = [64.5440 64.5571];%第一帧用固定值
 %限定在5~87dB，（标量量化10~77dB）
 for n = 1:N
     for i = 1:2
@@ -42,7 +43,7 @@ save('gain_res.mat','gain_res');
 
 %恢复
 gain_restor = zeros(row, col);
-gain_restor(1,:) = Gain(1,:);
+gain_restor(1,:) = [64.5440 64.5571];%第一帧用固定值
 for n = 2:N
     for i = 1:2
         gain_restor(n,i) = a(i)*gain_restor(n-1,i) + gain_res(n,i);
@@ -53,6 +54,6 @@ end
 gain_err = Gain - gain_restor;
 maxErr = max(abs(gain_err));
 MaxErrValue = 1.0e-10;
-if (maxErr(1)>MaxErrValue)||(maxErr(1)>MaxErrValue)
+if (maxErr(1)>MaxErrValue)||(maxErr(2)>MaxErrValue)
     error('larger than %e',MaxErrValue);
 end

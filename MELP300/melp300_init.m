@@ -31,3 +31,13 @@ preUV = 0;
 
 global modeCount;
 modeCount = [0 0 0 0 0 0];
+
+lsf_mean = [0.1897	0.3640	0.6313	0.9681	1.2868	1.6050	1.9230	2.2065	2.5305	2.8074];
+lsf_mean = lsf_mean*4000/pi;
+
+global gainLast lsfLast;
+gainLast = [64.5440 64.5571];
+lsfLast = zeros(1,10);
+global gainRestorPre lsfRestorPre;
+gainRestorPre = [64.5440 64.5571];
+lsfRestorPre = zeros(1,10);

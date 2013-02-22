@@ -3,11 +3,21 @@ function [ gainQ ] = gainVQ( gain, mode )
 %   Detailed explanation goes here
 global MODE1 MODE2 MODE3 MODE4;
 global gainCB_9b gainCB_65_6 gainCB_65_5 gainCB_76_7 gainCB_76_6;
-superSize = size(gain, 1);
-if superSize ~= 8
-    err('bandPass size ~= 8');
+[row, col] = size(gain);
+if row ~= 8
+    err('row ~= 8');
 end
 
+%限定在5~87dB，（标量量化10~77dB）
+for n = 1:row
+    for i = 1:2
+        if gain(n,i) < 5
+            gain(n,i) = 5;
+        elseif gain(n,i) > 87
+            gain(n,i) = 87;
+        end
+    end
+end
 %concatenation
 gainData(1:2) = gain(1,:);
 gainData(3:4) = gain(2,:);

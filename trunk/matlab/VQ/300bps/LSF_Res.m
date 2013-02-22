@@ -56,7 +56,7 @@ end
 
 %º∆À„≤–≤Ó
 lsf_res = w - lsf_pre;
-save('lsf_res.mat','lsf_res');
+% save('lsf_res.mat','lsf_res');
 
 %ª÷∏¥
 lsf_restor = zeros(row, col);

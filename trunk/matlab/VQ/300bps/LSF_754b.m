@@ -1,18 +1,17 @@
 %MELP300码本训练
 clear all;
 load('./lsf_res.mat'); %lsf_res
-lsf_temp = 4000*lsf_res/pi;%
 %四帧联合训练
 comb = 4;
-[len_temp, dimen_temp] = size(lsf_temp);
+[len_temp, dimen_temp] = size(lsf_res);
 length = fix(len_temp/comb);
 codebook_dimen = dimen_temp*comb;
 train_signal = zeros(length, codebook_dimen);
 for i=1:length
-    train_signal(i,1:10) = lsf_temp(comb*i-3, :);
-    train_signal(i,11:20) = lsf_temp(comb*i-2, :);
-	train_signal(i,21:30) = lsf_temp(comb*i-1, :);
-	train_signal(i,31:40) = lsf_temp(comb*i, :);
+    train_signal(i,1:10) = lsf_res(comb*i-3, :);
+    train_signal(i,11:20) = lsf_res(comb*i-2, :);
+	train_signal(i,21:30) = lsf_res(comb*i-1, :);
+	train_signal(i,31:40) = lsf_res(comb*i, :);
 end
 
 stage1_b = 7;

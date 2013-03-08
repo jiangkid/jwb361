@@ -1,16 +1,14 @@
 function [gain] = melp300_gain_d(gainQ, mode)
 %melp300 ÔöÒæ
 global MODE1 MODE2 MODE3 MODE4;
-global gainCB_8b;%8bit
-global gainCB_65_6 gainCB_65_5;%11bit
-global gainCB_76_7 gainCB_76_6;%13bit
+global gainCB_8b gainCB_9b gainCB_76_7 gainCB_76_6;
 
 switch mode
     case MODE1
         gainDecode = MSVQ_d(gainCB_76_7,gainQ(1),gainCB_76_6,gainQ(2));
-    case {MODE2, MODE3}
-        gainDecode = MSVQ_d(gainCB_65_6,gainQ(1),gainCB_65_5,gainQ(2));
-    case MODE4
+    case {MODE2}
+        gainDecode = MSVQ_d(gainCB_9b,gainQ);
+    case {MODE3,MODE4}
         gainDecode = MSVQ_d(gainCB_8b,gainQ);
     otherwise
         err('mode error');

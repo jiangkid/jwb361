@@ -2,6 +2,7 @@ function [ LSF_Q ] = LSF_VQ( lpcSuper, LSF, mode )
 %LSF_VQ Summary of this function goes here
 % f: lpc
 global MODE1 MODE2 MODE3 MODE4;
+global LSF_CB_753_7 LSF_CB_753_5 LSF_CB_753_3;%15bit
 global LSF_CB_754_7 LSF_CB_754_5 LSF_CB_754_4;%16bit
 global LSF_CB_764_7 LSF_CB_764_6 LSF_CB_764_4;%17bit
 global LSF_CB_765_7 LSF_CB_765_6 LSF_CB_765_5;%18bit
@@ -47,13 +48,13 @@ LSFData2(31:40) = LSF(8,:);
 
 %Vector Quantization
 switch mode
-    case MODE1
+    case MODE1%18+18=36
         LSF_Q(1, :) = LSF_MSVQ(LSFData1, ww(1,:), LSF_CB_765_7, LSF_CB_765_6, LSF_CB_765_5);
         LSF_Q(2, :) = LSF_MSVQ(LSFData2, ww(2,:), LSF_CB_765_7, LSF_CB_765_6, LSF_CB_765_5);
-    case {MODE2, MODE3}
+    case {MODE2}%17+17=34
         LSF_Q(1, :) = LSF_MSVQ(LSFData1, ww(1,:), LSF_CB_764_7, LSF_CB_764_6, LSF_CB_764_4);
         LSF_Q(2, :) = LSF_MSVQ(LSFData2, ww(2,:), LSF_CB_764_7, LSF_CB_764_6, LSF_CB_764_4);
-    case MODE4
+    case {MODE3,MODE4}%16+15=31
         LSF_Q(1, :) = LSF_MSVQ(LSFData1, ww(1,:), LSF_CB_754_7, LSF_CB_754_5, LSF_CB_754_4);
         LSF_Q(2, :) = LSF_MSVQ(LSFData2, ww(2,:), LSF_CB_754_7, LSF_CB_754_5, LSF_CB_754_4);
 end

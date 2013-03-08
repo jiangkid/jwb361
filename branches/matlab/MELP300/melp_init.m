@@ -15,7 +15,7 @@ CODEBOOK_FMCQ2;
 %changed by jiang
 %path=input('Please input drive[C:,D:...]\path..\path\filename(the type is .wav):\n    ','s');
 %s=wavread(path)';        %%%%%%%%%%%%%%%
-s=wavread('part2.wav')';
+s=wavread('./phone.wav')';
 %soundsc(s, 8000);
 %modify by jiangwenbin
 %[FileName,PathName,FilterIndex] = uigetfile('*.wav','select a wav file');

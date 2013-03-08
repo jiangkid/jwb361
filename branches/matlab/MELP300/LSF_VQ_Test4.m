@@ -3,8 +3,13 @@ clear all;
 Error_All = 0;
 % melp_init;
 melp300_init;
-load('./trainData/lsf_all.mat'); %lsf_all
-load('./trainData/lpc_all.mat'); %lpc_all
+global LSF_ResCB_31_s1 LSF_ResCB_31_s2 LSF_ResCB_31_s3 LSF_ResCB_31_s4;
+load('./codebook/LSF_ResCB_31b.mat');
+% load('./trainData/lsf_all.mat'); %lsf_all
+% load('./trainData/lpc_all.mat'); %lpc_all
+load('./data_org2.mat');
+lsf_all = lsf_org;
+
 b = [0.7918,0.6926,0.6938,0.7637,0.8064,0.7797,0.7677,0.7016,0.6774,0.6263;
 0.6573,0.4403,0.4018,0.5280,0.5734,0.5757,0.5716,0.4977,0.4812,0.4058;
 0.5685,0.2785,0.1912,0.3455,0.3947,0.4369,0.4389,0.3627,0.3510,0.2593;
@@ -22,7 +27,7 @@ lsfSuperPre = zeros(1, 10);%编码端上一超级帧最后一帧
 lsfSuperPreRes = zeros(1, 10);%解码端上一超级帧最后一帧
 for frameIdx = 1:superNum
     LSF = lsf_all(frameSize*frameIdx-7:frameSize*frameIdx,:);
-    lpcSuper = lpc_all(frameSize*frameIdx-7:frameSize*frameIdx,:);
+%     lpcSuper = lpc_all(frameSize*frameIdx-7:frameSize*frameIdx,:);
     
     %去均值
     for i = 1:frameSize
@@ -37,53 +42,21 @@ for frameIdx = 1:superNum
     lsfSuperPre = LSF(frameSize,:);    
     
     %calculate weight
-    weight = zeros(8,10);
-    for i=1:8
-        w = zeros(1, 10);
-        f = lsf_res(i,:);
-        lpcs = lpcSuper(i,:);
-        for j=1:10
-            w(j)=1+exp(-1i*f(j)*(1:10))*lpcs';
-        end
-        w=abs(w).^2;
-        w=w.^(-0.3);
-        w(9)=w(9)*0.64;
-        w(10)=w(10)*0.16;
-        weight(i,:) = w;
-    end
-    ww(1,1:10) = weight(1,:);
-    ww(1,11:20) = weight(2,:);
-    ww(1,21:30) = weight(3,:);
-    ww(1,31:40) = weight(4,:);
-    ww(2,1:10) = weight(5,:);
-    ww(2,11:20) = weight(6,:);
-    ww(2,21:30) = weight(7,:);
-    ww(2,31:40) = weight(8,:);
+    
+    weight = ones(1,80);
     
     %对残差进行矢量量化
-    LSFData1(1:10) = lsf_res(1,:);
-    LSFData1(11:20) = lsf_res(2,:);
-    LSFData1(21:30) = lsf_res(3,:);
-    LSFData1(31:40) = lsf_res(4,:);
-    LSFData2(1:10) = lsf_res(5,:);
-    LSFData2(11:20) = lsf_res(6,:);
-    LSFData2(21:30) = lsf_res(7,:);
-    LSFData2(31:40) = lsf_res(8,:);
+    LSF_VQ_Data = zeros(1,80);
+    for i=1:8
+        LSF_VQ_Data((i-1)*10+1:i*10) = lsf_res(i,:);
+    end   
+    LSF_Q = LSF_4SVQ(LSF_VQ_Data, weight, LSF_ResCB_31_s1, LSF_ResCB_31_s2, LSF_ResCB_31_s3, LSF_ResCB_31_s4);
+    LSF_d = MSVQ_d(LSF_ResCB_31_s1,LSF_Q(1),LSF_ResCB_31_s2,LSF_Q(2),LSF_ResCB_31_s3,LSF_Q(3),LSF_ResCB_31_s4,LSF_Q(4));
     
-    LSF_Q(1, :) = LSF_MSVQ(LSFData1, ww(1,:), LSF_CB_764_7, LSF_CB_764_6, LSF_CB_764_4);
-    LSF_Q(2, :) = LSF_MSVQ(LSFData2, ww(2,:), LSF_CB_764_7, LSF_CB_764_6, LSF_CB_764_4);
-    
-    LSF_Data(1,:) = MSVQ_d(LSF_CB_764_7,LSF_Q(1,1),LSF_CB_764_6,LSF_Q(1,2),LSF_CB_764_4,LSF_Q(1,3));
-    LSF_Data(2,:) = MSVQ_d(LSF_CB_764_7,LSF_Q(2,1),LSF_CB_764_6,LSF_Q(2,2),LSF_CB_764_4,LSF_Q(2,3));
-    
-    LSF_decode(1,:) = LSF_Data(1, 1:10);
-    LSF_decode(2,:) = LSF_Data(1, 11:20);
-    LSF_decode(3,:) = LSF_Data(1, 21:30);
-    LSF_decode(4,:) = LSF_Data(1, 31:40);
-    LSF_decode(5,:) = LSF_Data(2, 1:10);
-    LSF_decode(6,:) = LSF_Data(2, 11:20);
-    LSF_decode(7,:) = LSF_Data(2, 21:30);
-    LSF_decode(8,:) = LSF_Data(2, 31:40);
+    LSF_decode = zeros(8,10);
+    for i=1:8
+        LSF_decode(i,:) = LSF_d((i-1)*10+1:i*10);
+    end
     
     %恢复
     lsf_restor = zeros(frameSize, 10);
@@ -107,7 +80,7 @@ for frameIdx = 1:superNum
     %计算谱失真
     for i = 1:8
         count = count+1;
-        SD(count) = spectral_distortion2(lsf_restor(i,:)*pi/4000,LSF(i,:)*pi/4000);
+        SD(count) = spectral_distortion(lsf_restor(i,:)*pi/4000,LSF(i,:)*pi/4000);
     end
     
 end

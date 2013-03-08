@@ -5,14 +5,15 @@ Error_All = 0;
 melp300_init;
 load('./trainData/lsf_all.mat'); %lsf_all
 load('./trainData/lpc_all.mat'); %lpc_all
+% b = [0.9576 0.9312 0.9471 0.9716 0.9839 0.9916 0.9962 0.9974 0.9983 0.9992];
 b = [0.5547    0.2699    0.2090    0.3146    0.3382    0.3895    0.4183    0.3630    0.3724    0.2809];%帧间预测系数
 frameSize = 8;%8帧
 frameNum = size(lsf_all,1);
 SD = zeros(frameNum,1);
 count = 0;
 superNum = fix(frameNum/frameSize);
-lsfSuperPre = zeros(1, 10);%编码端上一超级帧最后一帧
-lsfSuperPreRes = zeros(1, 10);%解码端上一超级帧最后一帧
+lsfSuperPre = zeros(1,10);%编码端上一超级帧最后一帧
+lsfSuperPreRes = zeros(1,10);%解码端上一超级帧最后一帧
 for frameIdx = 1:superNum
     LSF = lsf_all(frameSize*frameIdx-7:frameSize*frameIdx,:);
     lpcSuper = lpc_all(frameSize*frameIdx-7:frameSize*frameIdx,:);
@@ -105,5 +106,5 @@ for frameIdx = 1:superNum
     end
     
 end
-disp(mean(SD));
+disp(mean(SD));%3.1569
 hist(SD,100);

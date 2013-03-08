@@ -21,9 +21,16 @@ lpcSuper = zeros(8,10);
 LSF1Super = zeros(4,10);
 LSF2Super = zeros(4,10);
 
+%参数提取
+% pitch_org = zeros(Nframe,1);
+% lsf_org = zeros(Nframe,10);
+% lpc_org = zeros(Nframe,10);
+% gain_org = zeros(Nframe,2);
+% vbp_org = zeros(Nframe,5);
+
 c = struct([]);
 frameData = struct([]);
-for frameIdx = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
+for frameIdx = 1:Nframe             %%%%%%%%%%%%%%%%%%%%
     %Refresh buffers，分析窗为两帧
     %Get new speech(filted by 4-order chebyshev filter)
     sig_in(1:FRL) = sig_in(FRL+1:FRL*2);
@@ -103,12 +110,12 @@ for frameIdx = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     [pavg, pavg_buffer] = melp_APU(p3, r3, G(2), pavg_buffer);
     
     %Get LSF    
-    %LSF = poly2lsf([1, e_lpc])';
-    LSF = melp_lpc2lsf(e_lpc);
+    LSF = poly2lsf([0.994, e_lpc])';
+    %LSF = melp_lpc2lsf(e_lpc);
     
     %minimun distance expand
     LSF = lsf_clmp(LSF);
-    
+
     %Muti-stage Vector Quatization
     MSVQ = melp_MSVQ(e_lpc, LSF);
     %Gain quantization
@@ -125,14 +132,14 @@ for frameIdx = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     
     %Quantize Fourier Magnitude
     QFM = melp_FMCQ(fm);
-    
+
     %%%%%%%%%%%%%%%%%%%
     interCnt = interCnt+1;
     bandPassSuper(interCnt,:) = vp;
     gainSuper(interCnt,:) = G;
-    if p3 == 0
-        p3 = 20;
-    end
+%     if p3 == 0
+%         p3 = 20;
+%     end
     pitchSuper(interCnt,:) = p3;
     LSFSuper(interCnt,:) = LSF;
     lpcSuper(interCnt,:) = e_lpc;
@@ -145,9 +152,22 @@ for frameIdx = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
         frameData(superCnt).pitchQ = pitchQ;
         frameData(superCnt).LSF_Q = LSF_Q;
         frameData(superCnt).QFM = QFM;
+        
+        %原始没有量化的数据
+        frameData(superCnt).bandPassSuper = bandPassSuper;
+        frameData(superCnt).gainSuper = gainSuper;
+        frameData(superCnt).pitchSuper = pitchSuper;
+        frameData(superCnt).LSFSuper = LSFSuper;
     end
+
+    %参数提取
+%     pitch_org(frameIdx,:) = p3;
+%     gain_org(frameIdx,:) = G;
+%     vbp_org(frameIdx,:) = vp;
+%     lsf_org(frameIdx,:) = LSF;
+%     lpc_org(frameIdx,:) = e_lpc;
     %%%%%%%%%%%%%%%%%%%%%%
-    
+    continue;
     %quantize vp
     if vp(1)<=0.6
         vp(2:5) = 0;
@@ -176,9 +196,9 @@ for frameIdx = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
         c(frameIdx).pitch = 0;
     end
 end
-
+% save('test4_data.mat','pitch_org','gain_org','vbp_org','lsf_org','lpc_org');
 %decode
 % voice = melp_decoder(c);
 voice = melp300_decoder(frameData);
-soundsc(voice, 8000);
-% wavwrite(voice/32768, 8000, strcat(datestr(now,'HH_MM_SS'),'.wav'));
+% soundsc(voice, 8000);
+wavwrite(voice/32768, 8000, strcat(datestr(now,'HH_MM_SS'),'.wav'));

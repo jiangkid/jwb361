@@ -1,4 +1,4 @@
-function [ VQ ] = LSF_MSVQ( LSFData, w, CB1, CB2, CB3 )
+function [ VQ ] = LSF_MSVQ( LSFData, w, CB1, CB2, CB3)
 %LSF_MSVQ, LSF多级矢量量化
 
 % %stage1
@@ -15,7 +15,7 @@ function [ VQ ] = LSF_MSVQ( LSFData, w, CB1, CB2, CB3 )
 dim = size(CB1, 2);
 JUDGE = 1000000000;
 %stage1
-M = 5;
+M = 10;
 d(1:M,1:dim+2)=JUDGE;
 CBSize = size(CB1, 1);
 for s=1:CBSize

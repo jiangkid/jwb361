@@ -5,16 +5,32 @@ d_init;
 melp300_init;
 frameNum = size(frameData, 2);
 global fm2 jt2 vp2;
+pitch_all_d = zeros(frameNum*8,1);
+lsf_all_d = zeros(frameNum*8,10);
+gain_all_d = zeros(frameNum*8,2);
+bandpass_d = zeros(frameNum*8,5);
+
 for superIdx = 1:frameNum
     % super-frame
+    if 1 
     bandPass = melp300_BP_d(frameData(superIdx).bandPassQ);
-    mode = modeDeterm(bandPass);
-    LSF = melp300_LSF_d(frameData(superIdx).LSF_Q, mode);
-    gain = melp300_gain_d(frameData(superIdx).gainQ, mode);
+    codeMode = modeDeterm(bandPass);
+    LSF = melp300_LSF_d(frameData(superIdx).LSF_Q, codeMode);
+    gain = melp300_gain_d(frameData(superIdx).gainQ, codeMode);
     bandPass = BandPassConstrain(bandPass);
-    pitch = melp300_pitch_d(frameData(superIdx).pitchQ, mode,bandPass);
+    pitch = melp300_pitch_d(frameData(superIdx).pitchQ, codeMode,bandPass);
+    else 
+    bandPass = frameData(superIdx).bandPassSuper;
+    LSF = frameData(superIdx).LSFSuper;
+    gain = frameData(superIdx).gainSuper;
+    pitch = melp300_pitch_d(frameData(superIdx).pitchQ, 4,bandPass);%÷ª∂‘pitch≤‚ ‘
+    end
+    pitch_all_d(superIdx*8-7:superIdx*8) = pitch';
+    lsf_all_d(superIdx*8-7:superIdx*8,:) = LSF;
+    gain_all_d(superIdx*8-7:superIdx*8,:) = gain;
+    bandpass_d(superIdx*8-7:superIdx*8,:) = bandPass;
     % inter-frame
-    for interIdx = 1:4
+    for interIdx = 1:8
         lsf_cur = LSF(interIdx,:);
         % [G1,G2,G2pt,G2p_error] = d_gains(gain(interIdx,:),G2pt,G2p_error);
         G1 = gain(interIdx,1);

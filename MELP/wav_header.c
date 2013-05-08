@@ -6,11 +6,11 @@
 #define ANALYSIS 1
 #define SYNTHESIS 2
 
-unsigned long wav_header_len(FILE* infile, FILE* outfile, int melpmode)
+unsigned long wav_header_len(FILE* infile, FILE* outfile, int melpmode, unsigned long wpcmlen)
 {
 	unsigned long i;
     unsigned long wfmtlen; //fmt chunk数据字节数
-	unsigned long wpcmlen; //实际PCM语音数据字节数
+	//unsigned long wpcmlen; //实际PCM语音数据字节数
 	unsigned long wavheadlen; //wav文件头字节数
 	char datacheck[4];
 	char temp;

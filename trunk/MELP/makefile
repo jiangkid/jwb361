@@ -27,8 +27,20 @@ OBJS = classify.o coeff.o dsp_sub.o fec_code.o fft_lib.o \
        mathhalf.o math_lib.o mat_lib.o melp_ana.o melp_chn.o melp_sub.o \
        melp_syn.o msvq_cb.o npp.o pitch.o pit_lib.o postfilt.o qnt12.o \
        qnt12_cb.o transcode.o vq_lib.o
-
-
+	   
+#add by JiangWenbin	   
+ENC =  classify.o coeff.o dsp_sub.o fec_code.o fft_lib.o \
+       fs_lib.o fsvq_cb.o global.o lpc_lib.o mathdp31.o \
+       mathhalf.o math_lib.o mat_lib.o melp_ana.o melp_chn.o melp_sub.o \
+       msvq_cb.o npp.o pitch.o pit_lib.o qnt12.o \
+       qnt12_cb.o vq_lib.o 
+	   
+DEC =  coeff.o dsp_sub.o fec_code.o fft_lib.o\
+       fs_lib.o fsvq_cb.o global.o harm.o lpc_lib.o mathdp31.o \
+       mathhalf.o math_lib.o mat_lib.o melp_chn.o melp_sub.o \
+       melp_syn.o msvq_cb.o pit_lib.o postfilt.o qnt12.o \
+       qnt12_cb.o vq_lib.o
+	   
 SCMAIN      = sc1200.o 
 SC12ENCMAIN = sc12enc.o 
 SC12DECMAIN = sc12dec.o 
@@ -39,28 +51,32 @@ SC24DECMAIN = sc24dec.o
 #   Specify options for compiling, linking, and archiving.  
 #------------------------------------------------------------------------------
 CC         = gcc 
-CFLAGS     = -O3 -Wall
+CFLAGS     = -O3 -Wall 
 LIBS	   = -lm
 COMPILE.c  = $(CC) $(CFLAGS) -c
 LINK.c     = $(CC) $(CFLAGS) 
 
-all: sc sc12enc sc12dec sc24enc sc24dec 
+#all: sc sc12enc sc12dec sc24enc sc24dec 
+all: sc12enc sc12dec 
+	size sc12enc
+	size sc12dec
 
 sc: ${SCMAIN} ${OBJS}
 	${CC} -o $@ ${CFLAGS} ${SCMAIN} ${OBJS} ${LIBS}
 
-sc12enc: ${SC12ENCMAIN} ${OBJS}
-	${CC} -o $@ ${CFLAGS} ${SC12ENCMAIN} ${OBJS} ${LIBS}
+sc12enc: ${SC12ENCMAIN} ${ENC}
+	${CC} -o $@ ${CFLAGS} ${SC12ENCMAIN} ${ENC} ${LIBS}
 
-sc12dec: ${SC12DECMAIN} ${OBJS}
-	${CC} -o $@ ${CFLAGS} ${SC12DECMAIN} ${OBJS} ${LIBS}
+sc12dec: ${SC12DECMAIN} ${DEC}
+	${CC} -o $@ ${CFLAGS} ${SC12DECMAIN} ${DEC} ${LIBS}
 
 sc24enc: ${SC24ENCMAIN} ${OBJS}
 	${CC} -o $@ ${CFLAGS} ${SC24ENCMAIN} ${OBJS} ${LIBS}
 
 sc24dec: ${SC24DECMAIN} ${OBJS}
 	${CC} -o $@ ${CFLAGS} ${SC24DECMAIN} ${OBJS} ${LIBS}
-
+clean:
+	rm *.o -rf
 #------------------------------------------------------------------------------
 #	Header Dependences
 #------------------------------------------------------------------------------

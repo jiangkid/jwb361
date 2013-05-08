@@ -26,7 +26,7 @@
 #include "constant.h"
 #include "math_lib.h"
 #include "math.h"
-#include "transcode.h"
+//#include "transcode.h"
 
 #if NPP
 #include "npp.h"
@@ -72,15 +72,20 @@ static void		printHelpMessage(char *argv[]);
 int main(int argc, char *argv[])
 {
 	Longword	length;
-	Shortword	speech_in[BLOCK], speech_out[BLOCK];
+	Shortword	speech_in[BLOCK];
 	Shortword	bitBufSize, bitBufSize12, bitBufSize24;
                                           /* size of the bitstream buffer */
 	BOOLEAN		eof_reached = FALSE;
 	FILE	*fp_in, *fp_out;
 
+#ifdef ENCOUDER
+	fprintf(stderr, "hello ENCOUDER\n");
+#else
+	fprintf(stderr, "ENCOUDER not define\n");
+#endif
+
 	/* ====== Get input parameters from command line ====== */
 	parseCommandLine(argc, argv);
-
 	/* ====== Open input, output, and parameter files ====== */
 	if ((fp_in = fopen(in_name,"rb")) == NULL){
 		fprintf(stderr, "  ERROR: cannot read file %s.\n", in_name);
@@ -122,10 +127,7 @@ int main(int argc, char *argv[])
 		bitBufSize = bitBufSize12;
 	}
 
-	if (mode != SYNTHESIS)
-		melp_ana_init();
-	if (mode != ANALYSIS)
-		melp_syn_init();
+	melp_ana_init();
 
 
 	/* ====== Run MELP coder on input signal ====== */
@@ -134,134 +136,36 @@ int main(int argc, char *argv[])
 	eof_reached = FALSE;
 	while (!eof_reached){
 		fprintf(stderr, "Frame = %ld\r", frame_count);
-
-		if (mode == DOWN_TRANS){
-			/* --- Read 2.4 channel input --- */
-            if( chwordsize == 8 ){
-			    length = fread(chbuf, sizeof(unsigned char),
-						   (bitBufSize24*NF), fp_in);
-            }else{
-    			int i, readNum;
-				unsigned int bitData;
-				for(i = 0; i < bitBufSize24*NF; i++){
-					readNum = fread(&bitData,sizeof(unsigned int),1,fp_in);
-					if( readNum != 1 )	break;
-					chbuf[i] = (unsigned char)bitData;
-				}	
-				length = i;		
-            }
-
-			if (length < (bitBufSize24*NF)){
+			/* read input speech */
+			length = readbl(speech_in, fp_in, frameSize);
+			if (length < frameSize){
+				v_zap(&speech_in[length], (Shortword) (FRAME - length));
 				eof_reached = TRUE;
-				break;
-			}
-			transcode_down();
-			/* --- Write 1.2 channel output --- */
-            if( chwordsize == 8 ){
-			    fwrite(chbuf, sizeof(unsigned char), bitBufSize12, fp_out);
-            }else{
-				int i;
-				unsigned int bitData;
-				for(i = 0; i < bitBufSize12; i++){
-					bitData = (unsigned int)(chbuf[i]);
-					fwrite(&bitData, sizeof(unsigned int), 1, fp_out);
-				}
-			}
-		} else if (mode == UP_TRANS){
-			/* --- Read 1.2 channel input --- */
-            if( chwordsize == 8 ){
-			    length = fread(chbuf, sizeof(unsigned char), bitBufSize12, fp_in);
-            }else{
-    			int i, readNum;
-				unsigned int bitData;
-				for(i = 0; i < bitBufSize12; i++){
-					readNum = fread(&bitData,sizeof(unsigned int),1,fp_in);
-					if( readNum != 1 )	break;
-					chbuf[i] = (unsigned char)bitData;
-				}	
-				length = i;		
-            }
-
-			if (length < bitBufSize12){
-				eof_reached = TRUE;
-				break;
-			}
-			transcode_up();
-			/* --- Write 2.4 channel output --- */
-            if( chwordsize == 8 ){
-			    fwrite(chbuf, sizeof(unsigned char), (bitBufSize24*NF), fp_out);
-            }else{
-				int i;
-				unsigned int bitData;
-				for(i = 0; i < bitBufSize24*NF; i++){
-					bitData = (unsigned int)(chbuf[i]);
-					fwrite(&bitData, sizeof(unsigned int), 1, fp_out);
-				}
 			}
 
-		} else {
-			/* Perform MELP analysis */
-			if (mode != SYNTHESIS){
-				/* read input speech */
-				length = readbl(speech_in, fp_in, frameSize);
-				if (length < frameSize){
-					v_zap(&speech_in[length], (Shortword) (FRAME - length));
-					eof_reached = TRUE;
-				}
-
-				/* ---- Noise Pre-Processor ---- */
+			/* ---- Noise Pre-Processor ---- */
 #if NPP
-				if (rate == RATE1200){
-					npp(speech_in, speech_in);
-					npp(&(speech_in[FRAME]), &(speech_in[FRAME]));
-					npp(&(speech_in[2*FRAME]), &(speech_in[2*FRAME]));
-				} else
-					npp(speech_in, speech_in);
+			if (rate == RATE1200){
+				npp(speech_in, speech_in);
+				npp(&(speech_in[FRAME]), &(speech_in[FRAME]));
+				npp(&(speech_in[2*FRAME]), &(speech_in[2*FRAME]));
+			} else
+				npp(speech_in, speech_in);
 #endif
-				analysis(speech_in, melp_par);
+			analysis(speech_in, melp_par);
 
-				/* ---- Write channel output if needed ---- */
-                if (mode == ANALYSIS){
-                    if( chwordsize == 8 ){
-					    fwrite(chbuf, sizeof(unsigned char), bitBufSize, fp_out);
-                    }else{
-        				int i;
-		        		unsigned int bitData;
-				        for(i = 0; i < bitBufSize; i++){
-					        bitData = (unsigned int)(chbuf[i]);
-					        fwrite(&bitData, sizeof(unsigned int), 1, fp_out);
-				        }
-			        }
-                }
-			}
+			/* ---- Write channel output if needed ---- */
 
-			/* ====== Perform MELP synthesis (skip first frame) ====== */
-			if (mode != ANALYSIS){
-
-				/* Read channel input if needed */
-				if (mode == SYNTHESIS){
-                    if( chwordsize == 8 ){
-					    length = fread(chbuf, sizeof(unsigned char), bitBufSize,
-						    		   fp_in);
-                    }else{
-    		        	int i, readNum;
-        				unsigned int bitData;
-		        		for(i = 0; i < bitBufSize; i++){
-				        	readNum = fread(&bitData,sizeof(unsigned int),1,fp_in);
-        					if( readNum != 1 )	break;
-		        			chbuf[i] = (unsigned char)bitData;
-				        }	
-        				length = i;		
-                    }
-					if (length < bitBufSize){
-						eof_reached = TRUE;
-						break;
-					}
-				}
-				synthesis(melp_par, speech_out);
-				writebl(speech_out, fp_out, frameSize);
-			}
-		}
+            if( chwordsize == 8 ){
+			    fwrite(chbuf, sizeof(unsigned char), bitBufSize, fp_out);
+            }else{
+				int i;
+        		unsigned int bitData;
+		        for(i = 0; i < bitBufSize; i++){
+			        bitData = (unsigned int)(chbuf[i]);
+			        fwrite(&bitData, sizeof(unsigned int), 1, fp_out);
+		        }
+	        }		
 		frame_count ++;
 	}
 

@@ -10,20 +10,21 @@ clear all;
 melp_init;
 p2_pre_count = 0;
 LSF_MSVQ_all = zeros(Nframe, 4);
+comb = 4;
 melp600_init;
 interCnt = 0;
 superCnt = 0;
-bandPassSuper = zeros(4,5);
-gainSuper = zeros(4,2);
-pitchSuper = zeros(4,1);
-LSFSuper = zeros(4,10);
-lpcSuper = zeros(4,10);
-LSF1Super = zeros(2,10);
-LSF2Super = zeros(2,10);
+bandPassSuper = zeros(comb,5);
+gainSuper = zeros(comb,2);
+pitchSuper = zeros(comb,1);
+LSFSuper = zeros(comb,10);
+lpcSuper = zeros(comb,10);
+LSF1Super = zeros(comb,10);
+LSF2Super = zeros(comb,10);
 
 c = struct([]);
 frameData = struct([]);
-for frameIdx = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
+for frameIdx = 1:Nframe             %%%%%%%%%%%%%%%%%%%%
     %Refresh buffers，分析窗为两帧
     %Get new speech(filted by 4-order chebyshev filter)
     sig_in(1:FRL) = sig_in(FRL+1:FRL*2);
@@ -103,8 +104,8 @@ for frameIdx = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     [pavg, pavg_buffer] = melp_APU(p3, r3, G(2), pavg_buffer);
     
     %Get LSF    
-    %LSF = poly2lsf([1, e_lpc])';
-    LSF = melp_lpc2lsf(e_lpc);
+    LSF = poly2lsf([0.994, e_lpc])';
+    %LSF = melp_lpc2lsf(e_lpc);
     
     %minimun distance expand
     LSF = lsf_clmp(LSF);
@@ -130,13 +131,13 @@ for frameIdx = 1:(Nframe-1)             %%%%%%%%%%%%%%%%%%%%
     interCnt = interCnt+1;
     bandPassSuper(interCnt,:) = vp;
     gainSuper(interCnt,:) = G;
-    if p3 == 0
-        p3 = 20;
-    end
+%     if p3 == 0
+%         p3 = 20;
+%     end
     pitchSuper(interCnt,:) = p3;
     LSFSuper(interCnt,:) = LSF;
     lpcSuper(interCnt,:) = e_lpc;
-    if 4 == interCnt %四帧联合量化
+    if comb == interCnt
         interCnt = 0;
         superCnt = superCnt+1;
         [bandPassQ,gainQ,pitchQ,LSF_Q] = melp600(bandPassSuper,gainSuper,pitchSuper,LSFSuper, lpcSuper);
@@ -180,5 +181,5 @@ end
 %decode
 % voice = melp_decoder(c);
 voice = melp600_decoder(frameData);
-% soundsc(voice, 8000);
+%soundsc(voice, 8000);
 wavwrite(voice/32768, 8000, strcat(datestr(now,'HH_MM_SS'),'.wav'));

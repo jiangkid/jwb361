@@ -9,7 +9,7 @@ for superIdx = 1:frameNum
     % super-frame
     bandPass = melp600_BP_d(frameData(superIdx).bandPassQ);
     mode = modeDeterm(bandPass);
-    LSF = melp600_LSF_d(frameData(superIdx).LSF_Q, mode);
+    LSF = LSF_VQ1_d(frameData(superIdx).LSF_Q, mode);
     gain = melp600_gain_d(frameData(superIdx).gainQ, mode);
     bandPass = BandPassConstrain(bandPass);
     pitch = melp600_pitch_d(frameData(superIdx).pitchQ, mode,bandPass);

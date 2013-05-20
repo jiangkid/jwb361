@@ -27,8 +27,8 @@ if 0
     pluse=[pluse(T-9:T),pluse(1:T-10)];%循环移位
 else
     %无残差
-    pluse = voicePulse(T);
-    pluse = pluse./sum(pluse);
+    pluse = c_voicePulse(T);
+    %pluse = pluse./sum(pluse);
 end
 %Scale
 pluse=pluse*sqrt(T)*1000;%是否要乘lpc_gain?

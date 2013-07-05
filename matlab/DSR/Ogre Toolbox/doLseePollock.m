@@ -9,7 +9,7 @@ window = hanning((size(Y,1)-1)*2,'periodic');
 window_length = length(window);
 step_dist1 =  floor(size(Y,1)/2);
 overlap = 4; 
-[rec,D] = lsee(Y,window,overlap);
+[rec,D] = LSEE(Y,window,overlap);
 
 sampling_rate =  (1/fs);
 IMGY = window_length;

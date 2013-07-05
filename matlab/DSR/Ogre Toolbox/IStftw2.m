@@ -20,7 +20,7 @@ w2sum = zeros (1,N*step + nfft);
 win_pos = [1: step: length(a) - nfft];
 
 for i=1:length(win_pos)
-   a(win_pos(i):win_pos(i)+nfft-1) = a(win_pos(i):win_pos(i)+nfft-1) + (bmat(:,i).').*(window.');
+   a(win_pos(i):win_pos(i)+nfft-1) = a(win_pos(i):win_pos(i)+nfft-1) + (bmat(1:nfft,i).').*(window.');
    w2sum(win_pos(i):win_pos(i)+nfft-1) = w2sum(win_pos(i):win_pos(i)+nfft-1) + w2'; 
 end
 

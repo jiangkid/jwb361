@@ -21,7 +21,7 @@ else
     y1 = abs(y1);
 end
 
-for(pp = 1:500)
+for(pp = 1:100)
     %compute STFT :
     curr_t = curr';
     y2 = Stft(curr_t,window,overlap);
@@ -40,14 +40,14 @@ for(pp = 1:500)
     
     err = sum((old-curr).^2);
     sig = sum(curr.^2);
-    errdB = 20*log10(sig/err);
+%     errdB = 20*log10(sig/err);
     
-    if  errdB > stopdB, %err < 1e-6,
-        disp(['Stop iteration at err = ', num2str(errdB) ' dB']);
-        break
-    end
+%     if  errdB > stopdB, %err < 1e-6,
+%         disp(['Stop iteration at err = ', num2str(errdB) ' dB']);
+%         break
+%     end
     
-    disp(['iteration ' int2str(pp) ', error = ' num2str(err) ', dB = ', num2str(errdB)]);
+%     disp(['iteration ' int2str(pp) ', error = ' num2str(err) ', dB = ', num2str(errdB)]);
     
     %       
     %    soundsc(real(curr),fs);

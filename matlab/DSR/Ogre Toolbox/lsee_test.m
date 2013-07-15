@@ -2,9 +2,9 @@
 clear all; % clear the workspace
 close all;
 
-InputFilename = 'mbma1.wav';
+InputFilename = '../mbma1.wav';
 [inSpeech, fs, bits] = wavread(InputFilename); % read the wavefile
-win = hanning(256,'periodic');%256是最佳！
+win = hamming(256,'periodic');%256是最佳！
 overlap = 2; 
 Y = Stft(inSpeech,win,overlap);
 Y = abs(Y);

@@ -49,7 +49,7 @@ for frameIdx = 1:frameNum_2
     dataFFT = fft(frameData, 256);
     
     dataAmp = abs(dataFFT);
-    data_r = rand(frameLen,1);%reconstruct
+    data_r = randn(frameLen,1);%reconstruct
     for i = 1:M
         fft_r = fft(data_r, 256);
         amp_r = abs(fft_r);

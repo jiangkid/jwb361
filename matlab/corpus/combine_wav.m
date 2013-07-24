@@ -2,6 +2,7 @@ close all;
 clear all;
 %cd('F:\ÓïÒô¿â\timit ÓïÒô¿â');
 cd('F:\ÓïÒô¿â\TIMITÍêÕû°æ\train\dr1');
+fs = 16000;
 allDir = dir;
 [dirNum,] = size(allDir);
 fileCount = 0;

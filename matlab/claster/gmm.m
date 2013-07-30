@@ -34,7 +34,7 @@ function varargout = gmm(X, K_or_centroids)
  
     % initial values
     [pMiu pPi pSigma] = init_params();
- 
+    count = 0;
     Lprev = -inf;
     while true
         Px = calc_prob();
@@ -55,10 +55,13 @@ function varargout = gmm(X, K_or_centroids)
  
         % check for convergence
         L = sum(log(Px*pPi'));
-        if L-Lprev < threshold
+        if L-Lprev < threshold            
+            str = sprintf('%d iterate, log-likelihood: %.2f', count, L);
+            disp(str);         
             break;
         end
         Lprev = L;
+        count = count+1;
     end
  
     if nargout == 1

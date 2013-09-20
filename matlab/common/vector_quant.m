@@ -5,8 +5,17 @@ function [ data_idx ] = vector_quant( data, codebook )
 if data_col ~= cb_col
     error('col error');
 end
-distance = pdist2(data, codebook);
-[value, data_idx] = min(distance);
+if data_row == 1
+    distance = pdist2(data, codebook);
+    [value, data_idx] = min(distance);
+else
+    data_idx = zeros(data_row,1);
+    for idx = 1:data_row
+        data_item = data(idx,:);        
+        distance = pdist2(data_item, codebook);
+        [value, data_idx(idx)] = min(distance);
+    end
+end
 
 end
 

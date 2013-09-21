@@ -2,7 +2,10 @@
 %load('../lsf_all.mat'); %lsf_all
 %train_signal = lsf_all';
 %size_b = 10; %size 2^10 = 1024
-function codebook = codeBookTrain(train_signal, size_b)
+function codebook = codeBookTrain(train_signal, size_b, abs_distor)
+if nargin<3 
+    abs_distor=1e-5;
+end
 %Âë±¾ÑµÁ·Ëã·¨
 [signal_num, codebook_dimen] = size(train_signal);
 e = 0.01;
@@ -26,7 +29,7 @@ for splitCount = 1 : size_b
         codebook_split(2*i-1, :) = k2*codebook(i, :);
     end
     codebook = codebook_split;
-    codebook = LBGFun(codebook, train_signal);
+    codebook = LBGFun(codebook, train_signal, abs_distor);
 end
 
 %codebook refine£¬ÌÞ³ý·ÇµäÐÍ°ûÇ»

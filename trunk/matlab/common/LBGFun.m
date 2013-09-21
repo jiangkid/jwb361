@@ -1,5 +1,8 @@
-function codebook = LBGFun(codebook, train_signal)
+function codebook = LBGFun(codebook, train_signal, ABS)
 %LBG algorithm
+if nargin<3 
+    ABS=1e-5;
+end
 [codebook_size, codebook_dimen] = size(codebook);
 [signal_num, signal_dimen] = size(train_signal);
 if codebook_dimen ~= signal_dimen
@@ -47,7 +50,7 @@ for counter=1:100;  %×î´ó100´Î
     distortion = distortion/signal_num;
     abs_distor=abs((ave_distort-distortion)/ave_distort);%
     %disp(abs_distor);
-    if(abs_distor < 0.00001)
+    if(abs_distor < ABS)
         break;
     end
     ave_distort = distortion;
